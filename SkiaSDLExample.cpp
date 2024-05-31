@@ -12,10 +12,15 @@
 #include "include/core/SkCanvas.h"
 #include "include/core/SkFont.h"
 #include "include/core/SkSurface.h"
-#include "include/utils/SkRandom.h"
+#include "src/base/SkRandom.h"
+#include "include/private/base/SkTArray.h"
 
 #include "include/gpu/gl/GrGLInterface.h"
-#include "src/gpu/gl/GrGLUtil.h"
+#include "src/gpu/ganesh/gl/GrGLUtil.h"
+#include "include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "include/gpu/ganesh/gl/GrGLDirectContext.h"
+#include "include/gpu/ganesh/gl/GrGLBackendSurface.h"
+#include "include/core/SkColorSpace.h"
 
 #if defined(SK_BUILD_FOR_ANDROID)
 #include <GLES/gl.h>
@@ -26,6 +31,9 @@
 #elif defined(SK_BUILD_FOR_IOS)
 #include <OpenGLES/ES2/gl.h>
 #endif
+#include "include/core/SkFontMgr.h"
+#include "include/ports/SkFontConfigInterface.h"
+#include "include/ports/SkFontMgr_FontConfigInterface.h"
 
 /*
  * This application is a simple example of how to combine SDL and Skia it demonstrates:
@@ -38,7 +46,7 @@
 struct ApplicationState {
     ApplicationState() : fQuit(false) {}
     // Storage for the user created rectangles. The last one may still be being edited.
-    SkTArray<SkRect> fRects;
+    skia_private::TArray<SkRect> fRects;
     bool fQuit;
 };
 
@@ -198,7 +206,7 @@ int main(int argc, char** argv) {
     auto interface = GrGLMakeNativeInterface();
 
     // setup contexts
-    sk_sp<GrDirectContext> grContext(GrDirectContext::MakeGL(interface));
+    sk_sp<GrDirectContext> grContext(GrDirectContexts::MakeGL(interface));
     SkASSERT(grContext);
 
     // Wrap the frame buffer object attached to the screen in a Skia render target so Skia can
@@ -224,7 +232,7 @@ int main(int argc, char** argv) {
         }
     }
 
-    GrBackendRenderTarget target(dw, dh, kMsaaSampleCount, kStencilBits, info);
+    GrBackendRenderTarget target = GrBackendRenderTargets::MakeGL(dw, dh, kMsaaSampleCount, kStencilBits, info);
 
     // setup SkSurface
     // To use distance field text, use commented out SkSurfaceProps instead
@@ -232,9 +240,9 @@ int main(int argc, char** argv) {
     //                      SkSurfaceProps::kUnknown_SkPixelGeometry);
     SkSurfaceProps props;
 
-    sk_sp<SkSurface> surface(SkSurface::MakeFromBackendRenderTarget(grContext.get(), target,
+    sk_sp<SkSurface> surface(SkSurfaces::WrapBackendRenderTarget(grContext.get(), target,
                                                                     kBottomLeft_GrSurfaceOrigin,
-                                                                    colorType, nullptr, &props));
+                                                                    colorType, nullptr, &props, NULL, NULL));
 
     SkCanvas* canvas = surface->getCanvas();
     canvas->scale((float)dw/dm.w, (float)dh/dm.h);
@@ -246,7 +254,7 @@ int main(int argc, char** argv) {
     SkPaint paint;
 
     // create a surface for CPU rasterization
-    sk_sp<SkSurface> cpuSurface(SkSurface::MakeRaster(canvas->imageInfo()));
+    sk_sp<SkSurface> cpuSurface(SkSurfaces::Raster(canvas->imageInfo()));
 
     SkCanvas* offscreen = cpuSurface->getCanvas();
     offscreen->save();
@@ -257,15 +265,19 @@ int main(int argc, char** argv) {
     sk_sp<SkImage> image = cpuSurface->makeImageSnapshot();
 
     int rotation = 0;
-    SkFont font;
+    sk_sp<SkFontConfigInterface> fc(SkFontConfigInterface::RefGlobal());
+    sk_sp<SkTypeface> typeface(SkFontMgr_New_FCI(std::move(fc))->legacyMakeTypeface("",SkFontStyle()));
+    SkFont font(typeface, 30);
     while (!state.fQuit) { // Our application loop
         SkRandom rand;
         canvas->clear(SK_ColorWHITE);
         handle_events(&state, canvas);
 
+        canvas->translate(0.0f,+30.0f);
         paint.setColor(SK_ColorBLACK);
         canvas->drawString(helpMessage, 100.0f, 100.0f, font, paint);
-        for (int i = 0; i < state.fRects.count(); i++) {
+        canvas->translate(0.0f,-30.0f);
+        for (int i = 0; i < state.fRects.size(); i++) {
             paint.setColor(rand.nextU() | 0x44808080);
             canvas->drawRect(state.fRects[i], paint);
         }
@@ -277,7 +289,9 @@ int main(int argc, char** argv) {
         canvas->drawImage(image, -50.0f, -50.0f);
         canvas->restore();
 
-        canvas->flush();
+        if (auto dContext = GrAsDirectContext(canvas->recordingContext())) {
+            dContext->flushAndSubmit();
+        }
         SDL_GL_SwapWindow(window);
     }
 
