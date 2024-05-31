@@ -32,8 +32,13 @@
 #include <OpenGLES/ES2/gl.h>
 #endif
 #include "include/core/SkFontMgr.h"
+#ifdef __linux__
 #include "include/ports/SkFontConfigInterface.h"
 #include "include/ports/SkFontMgr_FontConfigInterface.h"
+#endif
+#ifdef __APPLE__
+#include "include/ports/SkFontMgr_mac_ct.h"
+#endif
 
 /*
  * This application is a simple example of how to combine SDL and Skia it demonstrates:
@@ -265,8 +270,13 @@ int main(int argc, char** argv) {
     sk_sp<SkImage> image = cpuSurface->makeImageSnapshot();
 
     int rotation = 0;
+#ifdef __linux__
     sk_sp<SkFontConfigInterface> fc(SkFontConfigInterface::RefGlobal());
     sk_sp<SkTypeface> typeface(SkFontMgr_New_FCI(std::move(fc))->legacyMakeTypeface("",SkFontStyle()));
+#endif
+#ifdef __APPLE__
+    sk_sp<SkTypeface> typeface(SkFontMgr_New_CoreText(nullptr)->legacyMakeTypeface("",SkFontStyle()));
+#endif
     SkFont font(typeface, 30);
     while (!state.fQuit) { // Our application loop
         SkRandom rand;
