@@ -247,7 +247,7 @@ int main(int argc, char** argv) {
 
     sk_sp<SkSurface> surface(SkSurfaces::WrapBackendRenderTarget(grContext.get(), target,
                                                                     kBottomLeft_GrSurfaceOrigin,
-                                                                    colorType, nullptr, &props, NULL, NULL));
+                                                                    colorType, nullptr, &props));
 
     SkCanvas* canvas = surface->getCanvas();
     canvas->scale((float)dw/dm.w, (float)dh/dm.h);
