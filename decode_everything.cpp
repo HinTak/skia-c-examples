@@ -44,8 +44,12 @@ int main(int argc, char** argv) {
       codec = SkIcoDecoder::Decode(data, nullptr);
     } else if (SkJpegDecoder::IsJpeg(data->bytes(), data->size())) {
       codec = SkJpegDecoder::Decode(data, nullptr);
+#if 0
+/* Requires skia_use_libjxl_decode=true, and depends on third_party/libjxl,
+   which needs third_party/brotli and third_party/highway in turn. */
     } else if (SkJpegxlDecoder::IsJpegxl(data->bytes(), data->size())) {
       codec = SkJpegxlDecoder::Decode(data, nullptr);
+#endif
     } else if (SkPngDecoder::IsPng(data->bytes(), data->size())) {
       codec = SkPngDecoder::Decode(data, nullptr);
     } else if (SkWbmpDecoder::IsWbmp(data->bytes(), data->size())) {
