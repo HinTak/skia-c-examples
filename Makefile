@@ -3,7 +3,7 @@
 
 CXXFLAGS=-DGR_GL_CHECK_ERROR=0 -DGR_GL_LOG_CALLS=0 -Wall  -I./skia -I/usr/include/SDL2/ \
          -DSK_FONTMGR_FONTCONFIG_AVAILABLE
-LDFLAGS=-L./skia/out/Shared/ -lskparagraph -lsvg -lskshaper -lskunicode_icu -lskia \
+LDFLAGS=-L./skia/out/Shared/ -lskparagraph -lsvg -lskshaper -lskunicode_icu -lskunicode_core -lskia \
         -lfreetype -lwebp -ljpeg -lwebpdemux -lpng -lz  -lSDL2 -lGL -lX11
 
 
