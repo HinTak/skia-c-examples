@@ -6,6 +6,21 @@
  *
  */
 
+/*
+ * Changes from chrome/m92:example/SkiaSDLExample.cpp - HTL 2024:
+ *     - Update to current skia (m132+)
+ *     - Fix element-positioning bug due to window resizing:
+ *         - The (*bottom*-left corner of) text is drawn 100,100 from *top*-left
+ *         - Gnome-Shell forces the SDL window to resize to fit, as it tries to expand to fill full-screen
+ *         - Therefore element positioning was off by about 105 pixels, which means the text is invisible,
+ *           and the rects are drawn by a (variable) vertical offset from the mouse clicks.
+ *
+ * The python version goes further cosmetically: the (*top*-left of) text is exactly at 0,0 *top*-left,
+ * and also centers the rotating star. This c++ code is quite inconsistent in drawing
+ * the star fixed relative to the *bottom*-left corner, and the (*bottom*-left of) text relative to the
+ * *top*-left.
+ */
+
 #include "include/gpu/ganesh/GrBackendSurface.h"
 #include "include/gpu/ganesh/GrDirectContext.h"
 #include "SDL.h"
