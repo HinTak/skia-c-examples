@@ -52,6 +52,8 @@ struct ApplicationState {
     ApplicationState() : fQuit(false) {}
     // Storage for the user created rectangles. The last one may still be being edited.
     skia_private::TArray<SkRect> fRects;
+    int window_width;
+    int window_height;
     bool fQuit;
 };
 
@@ -78,6 +80,13 @@ static void handle_events(ApplicationState* state, SkCanvas* canvas) {
                                                                  SkIntToScalar(event.button.y),
                                                                  SkIntToScalar(event.button.x),
                                                                  SkIntToScalar(event.button.y));
+                }
+                break;
+            case SDL_WINDOWEVENT:
+                if(event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED ||
+                   event.window.event == SDL_WINDOWEVENT_RESIZED) {
+                   state->window_width  = event.window.data1;
+                   state->window_height = event.window.data2;
                 }
                 break;
             case SDL_KEYDOWN: {
@@ -253,6 +262,8 @@ int main(int argc, char** argv) {
     canvas->scale((float)dw/dm.w, (float)dh/dm.h);
 
     ApplicationState state;
+    state.window_width  = dw;
+    state.window_height = dh;
 
     const char* helpMessage = "Click and drag to create rects.  Press esc to quit.";
 
@@ -284,11 +295,13 @@ int main(int argc, char** argv) {
         handle_events(&state, canvas);
 
         paint.setColor(SK_ColorBLACK);
+        canvas->translate(0, dh - state.window_height);
         canvas->drawString(helpMessage, 100.0f, 100.0f, font, paint);
         for (int i = 0; i < state.fRects.size(); i++) {
             paint.setColor(rand.nextU() | 0x44808080);
             canvas->drawRect(state.fRects[i], paint);
         }
+        canvas->translate(0, -(dh - state.window_height));
 
         // draw offscreen canvas
         canvas->save();
