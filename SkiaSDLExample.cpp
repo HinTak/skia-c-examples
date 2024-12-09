@@ -9,6 +9,7 @@
 /*
  * Changes from chrome/m92:example/SkiaSDLExample.cpp - HTL 2024:
  *     - Update to current skia (m132+)
+ *     - Default typeface has no visible glyph from m120/m121 onwards; must be initialized
  *     - Fix element-positioning bug due to window resizing:
  *         - The (*bottom*-left corner of) text is drawn 100,100 from *top*-left
  *         - Gnome-Shell forces the SDL window to resize to fit, as it tries to expand to fill full-screen
