@@ -283,10 +283,8 @@ int main(int argc, char** argv) {
         canvas->clear(SK_ColorWHITE);
         handle_events(&state, canvas);
 
-        canvas->translate(0.0f, 2 * font.getSize());
         paint.setColor(SK_ColorBLACK);
         canvas->drawString(helpMessage, 100.0f, 100.0f, font, paint);
-        canvas->translate(0.0f,-2 * font.getSize());
         for (int i = 0; i < state.fRects.size(); i++) {
             paint.setColor(rand.nextU() | 0x44808080);
             canvas->drawRect(state.fRects[i], paint);
