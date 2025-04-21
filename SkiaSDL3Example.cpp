@@ -7,6 +7,9 @@
  */
 
 /*
+ * SDL3 Porting Notes:
+ *     -  Needs -lfontconfig against static libskia.
+ *
  * Changes from chrome/m92:example/SkiaSDLExample.cpp - HTL 2024:
  *     - Update to current skia (m132+)
  *     - Default typeface has no visible glyph from m120/m121 onwards; must be initialized
