@@ -183,14 +183,22 @@ int main(int argc, char** argv) {
     /*
      * In a real application you might want to initialize more subsystems
      */
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) != 0) {
+    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS)) {
         handle_error();
         return 1;
     }
 
     // Setup window
     // This code will create a window with the same resolution as the user's desktop.
-    const SDL_DisplayMode *dm = SDL_GetDesktopDisplayMode(0);
+    int num_displays = 0;
+    SDL_DisplayID *displays = SDL_GetDisplays(&num_displays);
+    if (!displays || num_displays < 1) {
+        handle_error();
+        return 1;
+    }
+
+    SDL_DisplayID instance_id = displays[0];
+    const SDL_DisplayMode *dm = SDL_GetDesktopDisplayMode(instance_id);
     if (!dm) {
         handle_error();
         return 1;
@@ -213,8 +221,8 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    int success =  SDL_GL_MakeCurrent(window, glContext);
-    if (success != 0) {
+    auto success =  SDL_GL_MakeCurrent(window, glContext);
+    if (!success) {
         handle_error();
         return success;
     }
