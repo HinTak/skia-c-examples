@@ -83,15 +83,15 @@ static void handle_events(ApplicationState* state, SkCanvas* canvas) {
     SDL_Event event;
     while(SDL_PollEvent(&event)) {
         switch (event.type) {
-            case SDL_MOUSEMOTION:
-                if (event.motion.state == SDL_PRESSED) {
+            case SDL_EVENT_MOUSE_MOTION :
+                if (event.motion.state == true) {
                     SkRect& rect = state->fRects.back();
                     rect.fRight = event.motion.x;
                     rect.fBottom = event.motion.y;
                 }
                 break;
-            case SDL_MOUSEBUTTONDOWN:
-                if (event.button.state == SDL_PRESSED) {
+            case SDL_EVENT_MOUSE_BUTTON_DOWN :
+                if (event.button.state == true) {
                     state->fRects.push_back() = SkRect::MakeLTRB(SkIntToScalar(event.button.x),
                                                                  SkIntToScalar(event.button.y),
                                                                  SkIntToScalar(event.button.x),
@@ -99,20 +99,20 @@ static void handle_events(ApplicationState* state, SkCanvas* canvas) {
                 }
                 break;
             case SDL_WINDOWEVENT:
-                if(event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED ||
-                   event.window.event == SDL_WINDOWEVENT_RESIZED) {
+                if(event.window.event == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED ||
+                   event.window.event == SDL_EVENT_WINDOW_RESIZED) {
                    state->window_width  = event.window.data1;
                    state->window_height = event.window.data2;
                 }
                 break;
-            case SDL_KEYDOWN: {
-                SDL_Keycode key = event.key.keysym.sym;
+            case SDL_EVENT_KEY_DOWN : {
+                SDL_Keycode key = event.key.key;
                 if (key == SDLK_ESCAPE) {
                     state->fQuit = true;
                 }
                 break;
             }
-            case SDL_QUIT:
+            case SDL_EVENT_QUIT :
                 state->fQuit = true;
                 break;
             default:
@@ -157,7 +157,7 @@ int main(int argc, char** argv) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
     windowFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE |
                   SDL_WINDOW_BORDERLESS | SDL_WINDOW_FULLSCREEN_DESKTOP |
-                  SDL_WINDOW_ALLOW_HIGHDPI;
+                  SDL_WINDOW_HIGH_PIXEL_DENSITY;
 #else
     // For all other clients we use the core profile and operate in a window
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -333,7 +333,7 @@ int main(int argc, char** argv) {
     }
 
     if (glContext) {
-        SDL_GL_DeleteContext(glContext);
+        SDL_GL_DestroyContext(glContext);
     }
 
     //Destroy window
