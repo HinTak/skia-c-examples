@@ -91,16 +91,17 @@ static void handle_events(ApplicationState* state, SkCanvas* canvas) {
                 }
                 break;
             case SDL_EVENT_MOUSE_BUTTON_DOWN :
-                if (event.button.state == true) {
+                if (event.button.down == true) {
                     state->fRects.push_back() = SkRect::MakeLTRB(SkIntToScalar(event.button.x),
                                                                  SkIntToScalar(event.button.y),
                                                                  SkIntToScalar(event.button.x),
                                                                  SkIntToScalar(event.button.y));
                 }
                 break;
-            case SDL_WINDOWEVENT:
-                if(event.window.event == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED ||
-                   event.window.event == SDL_EVENT_WINDOW_RESIZED) {
+            case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
+            case SDL_EVENT_WINDOW_RESIZED:
+                if(event.window.type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED ||
+                   event.window.type == SDL_EVENT_WINDOW_RESIZED) {
                    state->window_width  = event.window.data1;
                    state->window_height = event.window.data2;
                 }
@@ -189,14 +190,13 @@ int main(int argc, char** argv) {
 
     // Setup window
     // This code will create a window with the same resolution as the user's desktop.
-    SDL_DisplayMode dm;
-    if (SDL_GetDesktopDisplayMode(0, &dm) != 0) {
+    const SDL_DisplayMode *dm = SDL_GetDesktopDisplayMode(0);
+    if (!dm) {
         handle_error();
         return 1;
     }
 
-    SDL_Window* window = SDL_CreateWindow("SDL Window", SDL_WINDOWPOS_CENTERED,
-                                          SDL_WINDOWPOS_CENTERED, dm.w, dm.h, windowFlags);
+    SDL_Window* window = SDL_CreateWindow("SDL Window", dm->w, dm->h, windowFlags);
 
     if (!window) {
         handle_error();
@@ -225,7 +225,7 @@ int main(int argc, char** argv) {
 
 
     int dw, dh;
-    SDL_GL_GetDrawableSize(window, &dw, &dh);
+    SDL_GetWindowSizeInPixels(window, &dw, &dh);
 
     glViewport(0, 0, dw, dh);
     glClearColor(1, 1, 1, 1);
@@ -275,7 +275,7 @@ int main(int argc, char** argv) {
                                                                     colorType, nullptr, &props));
 
     SkCanvas* canvas = surface->getCanvas();
-    canvas->scale((float)dw/dm.w, (float)dh/dm.h);
+    canvas->scale((float)dw/dm->w, (float)dh/dm->h);
 
     ApplicationState state;
     state.window_width  = dw;
@@ -321,7 +321,7 @@ int main(int argc, char** argv) {
 
         // draw offscreen canvas
         canvas->save();
-        canvas->translate(dm.w / 2.0, dm.h / 2.0);
+        canvas->translate(dm->w / 2.0, dm->h / 2.0);
         canvas->rotate(rotation++);
         canvas->drawImage(image, -50.0f, -50.0f);
         canvas->restore();
