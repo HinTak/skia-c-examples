@@ -236,7 +236,9 @@ int main(int argc, char** argv) {
 
 
     int dw, dh;
-    SDL_GetWindowSizeInPixels(window, &dw, &dh);
+    //SDL_GetWindowSizeInPixels(window, &dw, &dh); // Not a good replacement for SDL2's SDL_GL_GetDrawableSize()
+    dw = dm->w;
+    dh = dm->h;
 
     glViewport(0, 0, dw, dh);
     glClearColor(1, 1, 1, 1);
