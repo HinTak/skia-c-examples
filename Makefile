@@ -28,3 +28,4 @@ clean:
 
 %.%.cpp :
 # The default implicit rule seems to be $(CXX) $(CXXFLAGS) $(LDFLAGS) $^ -o $@
+# It should be corrected to $(CXX) $(CXXFLAGS) $^ $(LDFLAGS) -o $@
