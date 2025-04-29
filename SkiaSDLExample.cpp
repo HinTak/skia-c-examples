@@ -7,6 +7,8 @@
  */
 
 /*
+ * Known to work with SDL2 2.30.11 and mis-behave with sdl2 compat 2.32.54 . HTL 2025-04-29
+ *
  * Changes from chrome/m92:example/SkiaSDLExample.cpp - HTL 2024:
  *     - Update to current skia (m132+)
  *     - Default typeface has no visible glyph from m120/m121 onwards; must be initialized
