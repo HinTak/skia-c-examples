@@ -133,6 +133,15 @@ Mouse Button Constants:
   SDL2 uses SDL_BUTTON_LEFT, SDL_BUTTON_RIGHT, etc.
   GLFW uses GLFW_MOUSE_BUTTON_LEFT, GLFW_MOUSE_BUTTON_RIGHT, etc.
 */
+/*
+if (event.type == SDL_MOUSEWHEEL) {
+    printf("Mouse wheel scrolled: %d\n", event.wheel.y);
+}
+*/
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
+    printf("Mouse wheel scrolled: %f\n", yoffset);
+}
+glfwSetScrollCallback(window, scrollCallback);
 static void handle_events(ApplicationState* state, SkCanvas* canvas) {
 /*
 SDL_Event event;
