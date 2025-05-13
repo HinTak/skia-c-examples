@@ -81,6 +81,13 @@ static void handle_error() {
     SDL_ClearError();
 }
 
+void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, true);
+    }
+}
+
+glfwSetKeyCallback(window, keyCallback);
 static void handle_events(ApplicationState* state, SkCanvas* canvas) {
 /*
 SDL_Event event;
