@@ -490,3 +490,38 @@ SDL_Quit();
     glfwTerminate();
     return 0;
 }
+/*
+#include <SDL2/SDL.h>
+#include <iostream>
+
+int main() {
+    SDL_Init(SDL_INIT_VIDEO);
+
+    SDL_Window* window = SDL_CreateWindow("SDL2 Mouse Events", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
+
+    bool running = true;
+    SDL_Event event;
+
+    while (running) {
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                running = false;
+            }
+            if (event.type == SDL_MOUSEMOTION) {
+                std::cout << "Mouse moved: (" << event.motion.x << ", " << event.motion.y << ")" << std::endl;
+            }
+            if (event.type == SDL_MOUSEBUTTONDOWN) {
+                std::cout << "Mouse button pressed: " << event.button.button << std::endl;
+            }
+            if (event.type == SDL_MOUSEWHEEL) {
+                std::cout << "Mouse wheel scrolled: " << event.wheel.y << std::endl;
+            }
+        }
+    }
+
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+
+    return 0;
+}
+*/
