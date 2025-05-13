@@ -150,6 +150,21 @@ printf("Mouse position: (%f, %f)\n", xpos, ypos);
 if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
     printf("Left mouse button is pressed.\n");
 }
+/*
+4. Summary of Key Differences
+  Callbacks vs Event Polling:
+
+    SDL2 uses centralized event polling with SDL_PollEvent.
+    GLFW uses event-specific callbacks or polling functions.
+  Mouse Button Constants:
+
+    SDL2: SDL_BUTTON_LEFT, SDL_BUTTON_RIGHT.
+    GLFW: GLFW_MOUSE_BUTTON_LEFT, GLFW_MOUSE_BUTTON_RIGHT.
+  Mouse Motion:
+
+    SDL2 provides relative motion (SDL_MOUSEMOTION).
+    GLFW provides absolute motion via glfwSetCursorPosCallback.
+*/
 static void handle_events(ApplicationState* state, SkCanvas* canvas) {
 /*
 SDL_Event event;
