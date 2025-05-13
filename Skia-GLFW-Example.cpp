@@ -128,6 +128,26 @@ while (SDL_PollEvent(&event)) {
             running = false;
         }
     }
+/*
+SDL_Event event;
+while (SDL_PollEvent(&event)) {
+    if (event.type == SDL_MOUSEMOTION) {
+        printf("Mouse moved: (%d, %d)\n", event.motion.x, event.motion.y);
+    }
+    if (event.type == SDL_MOUSEBUTTONDOWN) {
+        printf("Mouse button pressed: %d\n", event.button.button);
+    }
+    if (event.type == SDL_MOUSEWHEEL) {
+        printf("Mouse wheel scrolled: %d\n", event.wheel.y);
+    }
+}
+/*
+Key SDL2 Mouse Events:
+
+  SDL_MOUSEMOTION: Mouse movement.
+  SDL_MOUSEBUTTONDOWN / SDL_MOUSEBUTTONUP: Mouse button press/release.
+  SDL_MOUSEWHEEL: Mouse scroll.
+*/
     SDL_Event event;
     while(SDL_PollEvent(&event)) {
         switch (event.type) {
