@@ -384,5 +384,12 @@ SDL_GLContext context = SDL_GL_CreateContext(window);
 
     //Quit SDL subsystems
     SDL_Quit();
+/*
+SDL_GL_DeleteContext(context);
+SDL_DestroyWindow(window);
+SDL_Quit();
+*/
+    glfwDestroyWindow(window);
+    glfwTerminate();
     return 0;
 }
