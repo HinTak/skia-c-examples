@@ -142,6 +142,14 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
     printf("Mouse wheel scrolled: %f\n", yoffset);
 }
 glfwSetScrollCallback(window, scrollCallback);
+/* Mouse Position: */
+double xpos, ypos;
+glfwGetCursorPos(window, &xpos, &ypos);
+printf("Mouse position: (%f, %f)\n", xpos, ypos);
+/* Mouse Buttons: */
+if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+    printf("Left mouse button is pressed.\n");
+}
 static void handle_events(ApplicationState* state, SkCanvas* canvas) {
 /*
 SDL_Event event;
