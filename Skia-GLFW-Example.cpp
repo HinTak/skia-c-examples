@@ -107,6 +107,15 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 }
 
 glfwSetKeyCallback(window, keyCallback);
+/*
+if (event.type == SDL_MOUSEMOTION) {
+    printf("Mouse moved: (%d, %d)\n", event.motion.x, event.motion.y);
+}
+*/
+void cursorPositionCallback(GLFWwindow* window, double xpos, double ypos) {
+    printf("Mouse moved: (%f, %f)\n", xpos, ypos);
+}
+glfwSetCursorPosCallback(window, cursorPositionCallback);
 static void handle_events(ApplicationState* state, SkCanvas* canvas) {
 /*
 SDL_Event event;
