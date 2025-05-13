@@ -82,6 +82,26 @@ static void handle_error() {
 }
 
 static void handle_events(ApplicationState* state, SkCanvas* canvas) {
+/*
+SDL_Event event;
+while (SDL_PollEvent(&event)) {
+    if (event.type == SDL_QUIT) {
+        running = false;
+    }
+    if (event.type == SDL_KEYDOWN) {
+        if (event.key.keysym.sym == SDLK_ESCAPE) {
+            running = false;
+        }
+    }
+}
+*/
+    bool running = true;
+    while (!glfwWindowShouldClose(window)) {
+        glfwPollEvents();
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+            running = false;
+        }
+    }
     SDL_Event event;
     while(SDL_PollEvent(&event)) {
         switch (event.type) {
