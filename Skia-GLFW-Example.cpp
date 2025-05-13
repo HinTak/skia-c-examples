@@ -572,3 +572,23 @@ int main() {
     return 0;
 }
 */
+/*
+Key Points:
+
+  Mouse Motion:
+
+    SDL2 uses SDL_MOUSEMOTION to handle mouse movement.
+    GLFW sets a cursor position callback using glfwSetCursorPosCallback.
+  Mouse Button Events:
+
+    SDL2 uses SDL_MOUSEBUTTONDOWN and SDL_MOUSEBUTTONUP.
+    GLFW uses glfwSetMouseButtonCallback with button and action parameters.
+  Mouse Wheel Events:
+
+    SDL2 uses SDL_MOUSEWHEEL for scroll input.
+    GLFW uses glfwSetScrollCallback for the same functionality.
+  Polling vs Callbacks:
+
+    SDL2 relies on polling events via SDL_PollEvent.
+    GLFW uses event-specific callbacks, but you can still poll mouse state directly if needed.
+*/
