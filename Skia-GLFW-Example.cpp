@@ -525,3 +525,50 @@ int main() {
     return 0;
 }
 */
+/*
+#include <GLFW/glfw3.h>
+#include <iostream>
+
+void cursorPositionCallback(GLFWwindow* window, double xpos, double ypos) {
+    std::cout << "Mouse moved: (" << xpos << ", " << ypos << ")" << std::endl;
+}
+
+void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+    if (action == GLFW_PRESS) {
+        std::cout << "Mouse button pressed: " << button << std::endl;
+    }
+}
+
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
+    std::cout << "Mouse wheel scrolled: " << yoffset << std::endl;
+}
+
+int main() {
+    if (!glfwInit()) {
+        return -1;
+    }
+
+    GLFWwindow* window = glfwCreateWindow(800, 600, "GLFW Mouse Events", nullptr, nullptr);
+    if (!window) {
+        glfwTerminate();
+        return -1;
+    }
+
+    glfwMakeContextCurrent(window);
+
+    // Set mouse callbacks
+    glfwSetCursorPosCallback(window, cursorPositionCallback);
+    glfwSetMouseButtonCallback(window, mouseButtonCallback);
+    glfwSetScrollCallback(window, scrollCallback);
+
+    while (!glfwWindowShouldClose(window)) {
+        // Poll events
+        glfwPollEvents();
+    }
+
+    glfwDestroyWindow(window)
+    glfwTerminate();
+
+    return 0;
+}
+*/
