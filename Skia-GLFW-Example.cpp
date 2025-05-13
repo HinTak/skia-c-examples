@@ -24,6 +24,25 @@
  * *top*-left.
  */
 
+/*
+Common Pitfalls
+  Event Loop Differences:
+
+    SDL2 uses a centralized event system with SDL_PollEvent.
+    GLFW uses callbacks or direct polling (glfwGetKey, glfwWindowShouldClose).
+  Library Initialization:
+
+    Always call glfwInit and glfwTerminate during application startup and shutdown.
+  Feature Overlap:
+
+    GLFW focuses mainly on windowing and input for OpenGL. SDL2 offers broader
+    functionality like audio, threading, and file I/O. You may need
+    additional libraries for these features.
+  Context Hints:
+
+    Be sure to set OpenGL context hints with glfwWindowHint if your project relies on a specific OpenGL version.
+*/
+
 #include "include/gpu/ganesh/GrBackendSurface.h"
 #include "include/gpu/ganesh/GrDirectContext.h"
 #include "SDL.h"
