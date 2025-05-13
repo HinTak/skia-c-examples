@@ -116,6 +116,23 @@ void cursorPositionCallback(GLFWwindow* window, double xpos, double ypos) {
     printf("Mouse moved: (%f, %f)\n", xpos, ypos);
 }
 glfwSetCursorPosCallback(window, cursorPositionCallback);
+/*
+if (event.type == SDL_MOUSEBUTTONDOWN) {
+    printf("Mouse button pressed: %d\n", event.button.button);
+}
+*/
+void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+    if (action == GLFW_PRESS) {
+        printf("Mouse button pressed: %d\n", button);
+    }
+}
+glfwSetMouseButtonCallback(window, mouseButtonCallback);
+/*
+Mouse Button Constants:
+
+  SDL2 uses SDL_BUTTON_LEFT, SDL_BUTTON_RIGHT, etc.
+  GLFW uses GLFW_MOUSE_BUTTON_LEFT, GLFW_MOUSE_BUTTON_RIGHT, etc.
+*/
 static void handle_events(ApplicationState* state, SkCanvas* canvas) {
 /*
 SDL_Event event;
