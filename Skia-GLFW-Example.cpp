@@ -199,6 +199,20 @@ int main(int argc, char** argv) {
 
     SDL_Window* window = SDL_CreateWindow("SDL Window", SDL_WINDOWPOS_CENTERED,
                                           SDL_WINDOWPOS_CENTERED, dm.w, dm.h, windowFlags);
+/*
+SDL_Init(SDL_INIT_VIDEO);
+SDL_Window* window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL);
+SDL_GLContext context = SDL_GL_CreateContext(window);
+*/
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    GLFWwindow* window = glfwCreateWindow(800, 600, "GLFW Window", nullptr, nullptr);
+    if (!window) {
+        glfwTerminate();
+        return -1;
+    }
+    glfwMakeContextCurrent(window);
 
     if (!window) {
         handle_error();
