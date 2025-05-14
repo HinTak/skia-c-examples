@@ -114,7 +114,7 @@ int main(int argc, char** argv) {
     info.fFBOID = 0;  // Default framebuffer
     info.fFormat = GR_GL_RGBA8;
 
-    GrBackendRenderTarget target(width, height, 0, 8, info);
+    GrBackendRenderTarget target = GrBackendRenderTargets::MakeGL(width, height, 0, 8, info);
     SkSurfaceProps props;
 
     sk_sp<SkSurface> surface(SkSurfaces::WrapBackendRenderTarget(grContext.get(), target,
