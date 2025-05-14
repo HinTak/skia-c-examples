@@ -24,20 +24,39 @@
 #endif
 
 struct ApplicationState {
-    ApplicationState() : fQuit(false), window_width(0), window_height(0) {}
+    ApplicationState() : fQuit(false), isDragging(false), window_width(0), window_height(0) {}
     skia_private::TArray<SkRect> fRects;
     int window_width;
     int window_height;
     bool fQuit;
+    bool isDragging;
+    SkRect currentRect;
 };
 
 static void handle_error(const char* error_message) {
     fprintf(stderr, "Error: %s\n", error_message);
 }
 
-static void handle_events(GLFWwindow* window, ApplicationState* state) {
-    if (glfwWindowShouldClose(window)) {
-        state->fQuit = true;
+static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+    ApplicationState* state = (ApplicationState*)glfwGetWindowUserPointer(window);
+    if (button == GLFW_MOUSE_BUTTON_LEFT) {
+        if (action == GLFW_PRESS) {
+            double xpos, ypos;
+            glfwGetCursorPos(window, &xpos, &ypos);
+            state->currentRect = SkRect::MakeLTRB(SkIntToScalar(xpos), SkIntToScalar(ypos), SkIntToScalar(xpos), SkIntToScalar(ypos));
+            state->isDragging = true;
+        } else if (action == GLFW_RELEASE) {
+            state->fRects.push_back() = state->currentRect;
+            state->isDragging = false;
+        }
+    }
+}
+
+static void cursor_position_callback(GLFWwindow* window, double xpos, double ypos) {
+    ApplicationState* state = (ApplicationState*)glfwGetWindowUserPointer(window);
+    if (state->isDragging) {
+        state->currentRect.fRight = SkIntToScalar(xpos);
+        state->currentRect.fBottom = SkIntToScalar(ypos);
     }
 }
 
@@ -95,7 +114,7 @@ int main(int argc, char** argv) {
     info.fFBOID = 0;  // Default framebuffer
     info.fFormat = GR_GL_RGBA8;
 
-    GrBackendRenderTarget target = GrBackendRenderTargets::MakeGL(width, height, 0, 8, info);
+    GrBackendRenderTarget target(width, height, 0, 8, info);
     SkSurfaceProps props;
 
     sk_sp<SkSurface> surface(SkSurfaces::WrapBackendRenderTarget(grContext.get(), target,
@@ -106,6 +125,10 @@ int main(int argc, char** argv) {
     ApplicationState state;
     state.window_width = width;
     state.window_height = height;
+
+    glfwSetWindowUserPointer(window, &state);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetCursorPosCallback(window, cursor_position_callback);
 
     const char* helpMessage = "Click and drag to create rects. Press ESC to quit.";
     SkPaint paint;
@@ -130,7 +153,6 @@ int main(int argc, char** argv) {
 
     while (!state.fQuit) {
         glfwPollEvents();
-        handle_events(window, &state);
 
         canvas->clear(SK_ColorWHITE);
 
@@ -143,6 +165,10 @@ int main(int argc, char** argv) {
         for (int i = 0; i < state.fRects.size(); i++) {
             paint.setColor(rand.nextU() | 0x44808080);
             canvas->drawRect(state.fRects[i], paint);
+        }
+        if (state.isDragging) {
+            paint.setColor(0x44808080);  // Semi-transparent color for the current rectangle
+            canvas->drawRect(state.currentRect, paint);
         }
 
         // Draw rotating star
