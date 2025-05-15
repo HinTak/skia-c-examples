@@ -1,3 +1,24 @@
+/*
+ * Copyright 2015 Google Inc.
+ *
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ *
+ */
+/*
+ * Ported to GLFW by Copilot, 2025, from SkiaSDLExample.cpp, Hin-Tak Leung
+ *
+ * HTL (compared to a "faithful" manual port):
+ *   - The first version simply deleted all the mouse/key/resizing
+ *     interaction code. Quite alarming.
+ *   - 2nd prompt, it added back mouse_button_callback/cursor_position_callback
+       but decided to add more, the isDragging/currentRect constructs (below).
+       Stilll missing key_callback / framebuffer_size_callback.
+ *   - Copilot insisted on revert to (outdated/wrong) Skia m87 API from current,
+ *     on GrBackendRenderTarget initializaton.
+ *   - Copilot added the isDragging/currentRect constructs all by itself!
+ *     (and it comes with bugs...)
+ */
 #include "include/gpu/ganesh/GrBackendSurface.h"
 #include "include/gpu/ganesh/GrDirectContext.h"
 #include <GLFW/glfw3.h>
