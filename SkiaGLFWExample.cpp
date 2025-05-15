@@ -166,7 +166,7 @@ int main(int argc, char** argv) {
 #endif
     SkFont font(typeface);
 
-    while (!state.fQuit) {
+    while (!glfwWindowShouldClose(window) && !state.fQuit) {
         glfwPollEvents();
 
         canvas->clear(SK_ColorWHITE);
