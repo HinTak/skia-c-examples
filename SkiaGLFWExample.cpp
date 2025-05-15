@@ -182,7 +182,7 @@ int main(int argc, char** argv) {
             canvas->drawRect(state.fRects[i], paint);
         }
         if (state.isDragging) {
-            paint.setColor(0x44808080);  // Semi-transparent color for the current rectangle
+            paint.setColor(rand.nextU() | 0x44808080);  // Semi-transparent color for the current rectangle
             canvas->drawRect(state.currentRect, paint);
         }
 
