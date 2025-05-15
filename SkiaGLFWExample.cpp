@@ -26,10 +26,10 @@
 struct ApplicationState {
     ApplicationState() : fQuit(false), isDragging(false), window_width(0), window_height(0) {}
     skia_private::TArray<SkRect> fRects;
-    int window_width;
-    int window_height;
     bool fQuit;
     bool isDragging;
+    int window_width;
+    int window_height;
     SkRect currentRect;
 };
 
