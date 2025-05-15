@@ -60,6 +60,12 @@ static void cursor_position_callback(GLFWwindow* window, double xpos, double ypo
     }
 }
 
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    ApplicationState* state = (ApplicationState*)glfwGetWindowUserPointer(window);
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        state->fQuit = true;
+}
+
 static SkPath create_star() {
     static const int kNumPoints = 5;
     SkPath concavePath;
@@ -129,6 +135,7 @@ int main(int argc, char** argv) {
     glfwSetWindowUserPointer(window, &state);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetCursorPosCallback(window, cursor_position_callback);
+    glfwSetKeyCallback(window, key_callback);
 
     const char* helpMessage = "Click and drag to create rects. Press ESC to quit.";
     SkPaint paint;
