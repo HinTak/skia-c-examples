@@ -219,7 +219,7 @@ int main(int argc, char** argv) {
 
         // Draw help message
         paint.setColor(SK_ColorBLACK);
-        canvas->drawString(helpMessage, 100.0f, 100.0f, font, paint);
+        canvas->drawString(helpMessage, 0.0f, font.getSize(), font, paint);
 
         // Draw rectangles
         SkRandom rand;
