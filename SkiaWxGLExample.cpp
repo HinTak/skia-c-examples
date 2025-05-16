@@ -7,8 +7,8 @@
 #include <SkGraphics.h>
 #include <SkImageInfo.h>
 #include <GrDirectContext.h>
-#include <gl/glew.h>
-#include <gl/GL.h>
+#include <GL/glew.h>
+#include <GL/GL.h>
 #include <include/gpu/gl/GrGLInterface.h>
 
 // Custom wxGLCanvas for Skia drawing
