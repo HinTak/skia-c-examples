@@ -9,7 +9,7 @@
 #include <SkImageInfo.h>
 #include <GrDirectContext.h>
 #include <GL/gl.h>
-#include <include/gpu/gl/GrGLInterface.h>
+#include <include/gpu/ganesh/gl/GrGLInterface.h>
 
 // Custom wxGLCanvas for Skia drawing
 class SkiaGLPanel : public wxGLCanvas
