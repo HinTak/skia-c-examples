@@ -8,8 +8,8 @@
 #include <SkImageInfo.h>
 #include <SkFont.h>
 #include <SkTypeface.h>
-#include <include/gpu/GrDirectContext.h>
-#include <include/gpu/gl/GrGLInterface.h>
+#include <include/gpu/ganesh/GrDirectContext.h>
+#include <include/gpu/ganesh/gl/GrGLInterface.h>
 #include <GL/glew.h>
 #include <GL/gl.h>
 
