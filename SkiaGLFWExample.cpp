@@ -136,10 +136,6 @@ int main(int argc, char** argv) {
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
 
-    glViewport(0, 0, width, height);
-    glClearColor(1, 1, 1, 1);
-    glClear(GL_COLOR_BUFFER_BIT);
-
     auto interface = GrGLMakeNativeInterface();
     sk_sp<GrDirectContext> grContext(GrDirectContexts::MakeGL(interface));
     SkASSERT(grContext);
@@ -148,14 +144,8 @@ int main(int argc, char** argv) {
     info.fFBOID = 0;  // Default framebuffer
     info.fFormat = GR_GL_RGBA8;
 
-    GrBackendRenderTarget target = GrBackendRenderTargets::MakeGL(width, height, 0, 8, info);
     SkSurfaceProps props;
 
-    sk_sp<SkSurface> surface(SkSurfaces::WrapBackendRenderTarget(grContext.get(), target,
-                                                                 kBottomLeft_GrSurfaceOrigin,
-                                                                 kRGBA_8888_SkColorType, nullptr, &props));
-
-    SkCanvas* canvas = surface->getCanvas();
     ApplicationState state;
     state.window_width = width;
     state.window_height = height;
@@ -169,7 +159,7 @@ int main(int argc, char** argv) {
     const char* helpMessage = "Click and drag to create rects. Press ESC to quit.";
     SkPaint paint;
 
-    sk_sp<SkSurface> cpuSurface(SkSurfaces::Raster(canvas->imageInfo()));
+    sk_sp<SkSurface> cpuSurface(SkSurfaces::Raster(SkImageInfo::Make(width, height, kRGBA_8888_SkColorType, kOpaque_SkAlphaType)));
     SkCanvas* offscreen = cpuSurface->getCanvas();
     offscreen->save();
     offscreen->translate(50.0f, 50.0f);
@@ -187,8 +177,28 @@ int main(int argc, char** argv) {
 #endif
     SkFont font(typeface);
 
+    int last_fb_width, last_fb_height = 0;
+    sk_sp<SkSurface> cached_surface = nullptr;
+
     while (!glfwWindowShouldClose(window) && !state.fQuit) {
         glfwPollEvents();
+
+        int fb_width, fb_height;
+        glfwGetFramebufferSize(window, &fb_width, &fb_height);
+        glViewport(0, 0, fb_width, fb_height);
+        glClearColor(1, 1, 1, 1);
+        glClear(GL_COLOR_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+
+        if ((fb_width != last_fb_width) || (fb_height != last_fb_height)) {
+            GrBackendRenderTarget target = GrBackendRenderTargets::MakeGL(fb_width, fb_height, 0, 8, info);
+            sk_sp<SkSurface> surface(SkSurfaces::WrapBackendRenderTarget(grContext.get(), target,
+                                                                         kBottomLeft_GrSurfaceOrigin,
+                                                                         kRGBA_8888_SkColorType, nullptr, &props));
+            cached_surface = surface;
+            last_fb_width = fb_width;
+            last_fb_height = fb_height;
+        }
+        SkCanvas* canvas = cached_surface->getCanvas();
 
         canvas->clear(SK_ColorWHITE);
 
