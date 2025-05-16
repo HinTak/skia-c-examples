@@ -9,9 +9,22 @@
 #include <SkImageInfo.h>
 #include <SkFont.h>
 #include <SkTypeface.h>
+#include <SkColorSpace.h>
+#include <include/gpu/ganesh/SkSurfaceGanesh.h>
 #include <include/gpu/ganesh/GrDirectContext.h>
+#include <include/gpu/ganesh/GrBackendSurface.h>
 #include <include/gpu/ganesh/gl/GrGLInterface.h>
+#include <include/gpu/ganesh/gl/GrGLDirectContext.h>
+#include <include/gpu/ganesh/gl/GrGLBackendSurface.h>
 #include <GL/gl.h>
+#include "include/core/SkFontMgr.h"
+#ifdef __linux__
+#include "include/ports/SkFontConfigInterface.h"
+#include "include/ports/SkFontMgr_FontConfigInterface.h"
+#endif
+#ifdef __APPLE__
+#include "include/ports/SkFontMgr_mac_ct.h"
+#endif
 
 class SkiaGLCanvas : public wxGLCanvas
 {
@@ -58,7 +71,7 @@ private:
 
         if (!m_grContext) {
             auto interface = GrGLMakeNativeInterface();
-            m_grContext = GrDirectContext::MakeGL(interface);
+            m_grContext = GrDirectContexts::MakeGL(interface);
         }
 
         if (!m_surface || w != m_lastW || h != m_lastH) {
@@ -66,8 +79,8 @@ private:
             fbInfo.fFBOID = 0;
             fbInfo.fFormat = GL_RGBA8;
 
-            GrBackendRenderTarget backendRT(w, h, 0, 0, fbInfo);
-            m_surface = SkSurface::MakeFromBackendRenderTarget(
+            GrBackendRenderTarget backendRT = GrBackendRenderTargets::MakeGL(w, h, 0, 0, fbInfo);
+            m_surface = SkSurfaces::WrapBackendRenderTarget(
                 m_grContext.get(),
                 backendRT,
                 kBottomLeft_GrSurfaceOrigin,
@@ -118,11 +131,22 @@ private:
         textPaint.setColor(SK_ColorBLACK);
         textPaint.setAntiAlias(true);
 
-        SkFont font(SkTypeface::MakeDefault(), 64);
+#ifdef __linux__
+    sk_sp<SkFontConfigInterface> fc(SkFontConfigInterface::RefGlobal());
+    sk_sp<SkTypeface> typeface(SkFontMgr_New_FCI(std::move(fc))->legacyMakeTypeface("",SkFontStyle()));
+#endif
+#ifdef __APPLE__
+    sk_sp<SkTypeface> typeface(SkFontMgr_New_CoreText(nullptr)->legacyMakeTypeface("",SkFontStyle()));
+#endif
+        SkFont font(typeface, 64);
         canvas->drawString("Skia", 500, 390, font, textPaint);
 
         // Flush rendering
-        m_surface->flushAndSubmit();
+        auto direct = GrAsDirectContext(m_surface->recordingContext());
+        if (direct) {
+          direct->flush(m_surface.get(), SkSurfaces::BackendSurfaceAccess::kNoAccess, GrFlushInfo());
+          direct->submit();
+        }
         glFlush();
         SwapBuffers();
     }
