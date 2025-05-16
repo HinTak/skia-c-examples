@@ -13,6 +13,7 @@
  *     interaction code. Quite alarming.
  *   - It simply was not able to do initial full-desktop window size,
  *     and decided arbitrarily to use 800,600.
+ *   - Arbitrarily GLFW_CONTEXT_VERSION_MINOR to 3.
  *   - 2nd prompt, it added back mouse_button_callback/cursor_position_callback
  *     but decided to add more, the isDragging/currentRect constructs (below).
  *     Stilll missing key_callback / framebuffer_size_callback.
