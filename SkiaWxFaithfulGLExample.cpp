@@ -1,4 +1,5 @@
 #include <wx/wx.h>
+#include <GL/glew.h>
 #include <wx/glcanvas.h>
 #include <SkSurface.h>
 #include <SkCanvas.h>
@@ -10,7 +11,6 @@
 #include <SkTypeface.h>
 #include <include/gpu/ganesh/GrDirectContext.h>
 #include <include/gpu/ganesh/gl/GrGLInterface.h>
-#include <GL/glew.h>
 #include <GL/gl.h>
 
 class SkiaGLCanvas : public wxGLCanvas
