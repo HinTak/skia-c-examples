@@ -10,6 +10,16 @@
  * SDL3 Porting Notes:
  *     -  Needs -lfontconfig against static libskia.
  *
+ * Compile instruction (skia m137):
+   c++ -DGR_GL_CHECK_ERROR=0 -DGR_GL_LOG_CALLS=0 -Wall \
+   -I./skia \
+   -DSK_FONTMGR_FONTCONFIG_AVAILABLE \
+   SkiaSDL3Example.cpp \
+   -L./skia/out/Release/ \
+   -lskparagraph -lsvg -lskshaper -lskunicode_icu -lskunicode_core -lskia \
+   -lfreetype -lwebp -ljpeg -lwebpdemux -lpng -lz  -lSDL3 -lGL -lfontconfig \
+   -o SkiaSDL3Example
+ *
  * Changes from chrome/m92:example/SkiaSDLExample.cpp - HTL 2024:
  *     - Update to current skia (m132+)
  *     - Default typeface has no visible glyph from m120/m121 onwards; must be initialized
@@ -27,7 +37,7 @@
 
 #include "include/gpu/ganesh/GrBackendSurface.h"
 #include "include/gpu/ganesh/GrDirectContext.h"
-#include "SDL.h"
+#include "SDL3/SDL.h"
 #include "include/core/SkCanvas.h"
 #include "include/core/SkFont.h"
 #include "include/core/SkSurface.h"
