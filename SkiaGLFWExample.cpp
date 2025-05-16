@@ -59,9 +59,8 @@
 #endif
 
 struct ApplicationState {
-    ApplicationState() : fQuit(false), isDragging(false), window_width(0), window_height(0) {}
+    ApplicationState() : isDragging(false), window_width(0), window_height(0) {}
     skia_private::TArray<SkRect> fRects;
-    bool fQuit;
     bool isDragging;
     int window_width;
     int window_height;
@@ -96,9 +95,8 @@ static void cursor_position_callback(GLFWwindow* window, double xpos, double ypo
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    ApplicationState* state = (ApplicationState*)glfwGetWindowUserPointer(window);
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        state->fQuit = true;
+        glfwSetWindowShouldClose(window, true);
 }
 
 static void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
@@ -197,7 +195,7 @@ int main(int argc, char** argv) {
     int last_fb_width, last_fb_height = 0;
     sk_sp<SkSurface> cached_surface = nullptr;
 
-    while (!glfwWindowShouldClose(window) && !state.fQuit) {
+    while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
 
         int fb_width, fb_height;
