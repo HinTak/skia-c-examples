@@ -18,6 +18,16 @@
  *     on GrBackendRenderTarget initializaton.
  *   - Copilot added the isDragging/currentRect constructs all by itself!
  *     (and it comes with bugs...)
+ *
+ * Compile with (skia m137):
+     c++ -DGR_GL_CHECK_ERROR=0 -DGR_GL_LOG_CALLS=0 -Wall \
+     -I./skia \
+     -DSK_FONTMGR_FONTCONFIG_AVAILABLE \
+     SkiaGLFWExample.cpp \
+     -L./skia/out/Release/ \
+     -lskparagraph -lsvg -lskshaper -lskunicode_icu -lskunicode_core -lskia \
+     -lfreetype -lwebp -ljpeg -lwebpdemux -lpng -lz  -lglfw -lGL -lfontconfig \
+     -o SkiaGLFWExample
  */
 #include "include/gpu/ganesh/GrBackendSurface.h"
 #include "include/gpu/ganesh/GrDirectContext.h"
