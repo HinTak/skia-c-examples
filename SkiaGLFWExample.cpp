@@ -20,6 +20,8 @@
  *     on GrBackendRenderTarget initializaton.
  *   - Copilot added the isDragging/currentRect constructs all by itself!
  *     (and it comes with bugs...)
+ *   - Some of the missing code is filled-in by referencing the Copilot python
+ *     port, which did a much better job.
  *
  * Compile with (skia m137):
      c++ -DGR_GL_CHECK_ERROR=0 -DGR_GL_LOG_CALLS=0 -Wall \

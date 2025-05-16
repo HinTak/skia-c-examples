@@ -18,7 +18,7 @@
  *         - Therefore element positioning was off by about 105 pixels, which means the text is invisible,
  *           and the rects are drawn by a (variable) vertical offset from the mouse clicks.
  *
- * The python version goes further cosmetically: the (*top*-left of) text is exactly at 0,0 *top*-left,
+ * The python / GLFW c++ version goes further cosmetically: the (*top*-left of) text is exactly at 0,0 *top*-left,
  * and also centers the rotating star. This c++ code is quite inconsistent in drawing
  * the star fixed relative to the *bottom*-left corner, and the (*bottom*-left of) text relative to the
  * *top*-left.
