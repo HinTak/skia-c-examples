@@ -1,4 +1,5 @@
 #include <wx/wx.h>
+#include <GL/glew.h>
 #include <wx/glcanvas.h>
 #include <SkSurface.h>
 #include <SkCanvas.h>
@@ -7,7 +8,6 @@
 #include <SkGraphics.h>
 #include <SkImageInfo.h>
 #include <GrDirectContext.h>
-#include <GL/glew.h>
 #include <GL/GL.h>
 #include <include/gpu/gl/GrGLInterface.h>
 
