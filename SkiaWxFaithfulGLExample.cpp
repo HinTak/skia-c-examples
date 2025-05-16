@@ -1,3 +1,25 @@
+/*
+  Compile with (against Skia m137):
+  c++ \
+  `wx-config --cxxflags` \
+  -DGR_GL_CHECK_ERROR=0 -DGR_GL_LOG_CALLS=0 -Wall \
+  -I./skia -I./skia/include/core/ \
+  -DSK_FONTMGR_FONTCONFIG_AVAILABLE \
+  SkiaWxFaithfulGLExample.cpp \
+  -L./skia/out/Release/ \
+  -lskparagraph -lsvg -lskshaper -lskunicode_icu -lskunicode_core -lskia \
+  -lfreetype -lwebp -ljpeg -lwebpdemux -lpng -lz\
+  -pthread -lwx_gtk3u_gl-3.2 -lwx_gtk3u_core-3.2 -lwx_baseu-3.2 \
+  -lGL  -lfontconfig -lGLEW \
+  -o SkiaWxFaithfulGLExample
+ */
+/*
+  `wx-config --libs` returns:
+
+      -pthread   -lwx_gtk3u_xrc-3.2 -lwx_gtk3u_html-3.2 -lwx_gtk3u_qa-3.2 -lwx_gtk3u_core-3.2 -lwx_baseu_xml-3.2 -lwx_baseu_net-3.2 -lwx_baseu-3.2
+
+  which is a lot more than the minimum (-lwx_gtk3u_gl-3.2 -lwx_gtk3u_core-3.2 -lwx_baseu-3.2).
+ */
 #include <wx/wx.h>
 #include <GL/glew.h>
 #include <wx/glcanvas.h>
