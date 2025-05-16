@@ -60,7 +60,7 @@ public:
         // Set up Skia GPU context if not done already
         if (!m_skContext) {
             auto interface = GrGLMakeNativeInterface();
-            m_skContext = GrDirectContext::MakeGL(interface);
+            m_skContext = GrDirectContexts::MakeGL(interface);
         }
 
         // Recreate Skia surface if needed
@@ -69,11 +69,11 @@ public:
             fbInfo.fFBOID = 0; // 0 is default framebuffer
             fbInfo.fFormat = GL_RGBA8;
 
-            GrBackendRenderTarget backendRenderTarget(width, height, 0, 0, fbInfo);
+            GrBackendRenderTarget backendRenderTarget = GrBackendRenderTargets::MakeGL(width, height, 0, 0, fbInfo);
 
             SkColorType colorType = kRGBA_8888_SkColorType;
 
-            m_surface = SkSurface::MakeFromBackendRenderTarget(
+            m_surface = SkSurfaces::WrapBackendRenderTarget(
                 m_skContext.get(),
                 backendRenderTarget,
                 kBottomLeft_GrSurfaceOrigin, // GL default
@@ -105,7 +105,11 @@ public:
         canvas->drawPath(path, paint);
 
         // Present
-        m_surface->flushAndSubmit();
+        auto direct = GrAsDirectContext(m_surface->recordingContext());
+        if (direct) {
+          direct->flush(m_surface.get(), SkSurfaces::BackendSurfaceAccess::kNoAccess, GrFlushInfo());
+          direct->submit();
+        }
         glFlush();
         SwapBuffers();
     }
