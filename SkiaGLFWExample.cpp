@@ -219,7 +219,7 @@ int main(int argc, char** argv) {
 
         // Draw rotating star
         canvas->save();
-        canvas->translate(width / 2.0, height / 2.0);
+        canvas->translate(state.window_width / 2.0, state.window_height / 2.0);
         canvas->rotate(rotation++);
         canvas->drawImage(image, -50.0f, -50.0f);
         canvas->restore();
