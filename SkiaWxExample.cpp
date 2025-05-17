@@ -1,3 +1,15 @@
+/*
+  c++ \
+  `wx-config --cxxflags` \
+  -DGR_GL_CHECK_ERROR=0 -DGR_GL_LOG_CALLS=0 -Wall \
+  -I./skia -I./skia/include/core/ -I./skia/include/gpu/ganesh/ \
+  -DSK_FONTMGR_FONTCONFIG_AVAILABLE \
+  SkiaWxExample.cpp \
+  -L./skia/out/Release/ -lskparagraph -lsvg -lskshaper -lskunicode_icu -lskunicode_core -lskia \
+  -lfreetype -lwebp -ljpeg -lwebpdemux -lpng -lz \
+  -pthread -lwx_gtk3u_core-3.2 -lwx_baseu-3.2 \
+  -o SkiaWxExample
+ */
 #include <wx/wx.h>
 #include <wx/dcbuffer.h>
 #include <SkSurface.h>
