@@ -1,4 +1,5 @@
 #include <wx/wx.h>
+#include <GL/glew.h>
 #include <wx/glcanvas.h>
 #include <SkSurface.h>
 #include <SkCanvas.h>
@@ -6,12 +7,24 @@
 #include <SkPath.h>
 #include <SkGraphics.h>
 #include <SkImageInfo.h>
+#include <SkColorSpace.h>
 #include <SkFont.h>
 #include <SkTypeface.h>
-#include <include/gpu/GrDirectContext.h>
-#include <include/gpu/gl/GrGLInterface.h>
-#include <GL/glew.h>
+#include <include/gpu/ganesh/SkSurfaceGanesh.h> // SkSurfaces::WrapBackendRenderTarget
+#include <include/gpu/ganesh/GrBackendSurface.h> // GrBackendRenderTarget
+#include <include/gpu/ganesh/GrDirectContext.h>
+#include <include/gpu/ganesh/gl/GrGLInterface.h>
+#include <include/gpu/ganesh/gl/GrGLDirectContext.h> // GrDirectContexts
+#include <include/gpu/ganesh/gl/GrGLBackendSurface.h> // GrBackendRenderTargets
 #include <GL/gl.h>
+#include "include/core/SkFontMgr.h"
+#ifdef __linux__
+#include "include/ports/SkFontConfigInterface.h"
+#include "include/ports/SkFontMgr_FontConfigInterface.h"
+#endif
+#ifdef __APPLE__
+#include "include/ports/SkFontMgr_mac_ct.h"
+#endif
 
 class SkiaGLCanvas : public wxGLCanvas
 {
@@ -63,7 +76,7 @@ private:
         // Create or reuse GrDirectContext
         if (!m_grContext) {
             auto interface = GrGLMakeNativeInterface();
-            m_grContext = GrDirectContext::MakeGL(interface);
+            m_grContext = GrDirectContexts::MakeGL(interface);
         }
 
         // Create or reuse SkSurface
@@ -72,8 +85,8 @@ private:
             fbInfo.fFBOID = 0;  // Assuming default framebuffer
             fbInfo.fFormat = GL_RGBA8; // Or another format, depending on your setup
 
-            GrBackendRenderTarget backendRT(w, h, 0, 0, fbInfo);
-            m_surface = SkSurface::MakeFromBackendRenderTarget(
+            GrBackendRenderTarget backendRT = GrBackendRenderTargets::MakeGL(w, h, 0, 0, fbInfo);
+            m_surface = SkSurfaces::WrapBackendRenderTarget(
                 m_grContext.get(),
                 backendRT,
                 kBottomLeft_GrSurfaceOrigin, // or kTopLeft_GrSurfaceOrigin
@@ -129,7 +142,14 @@ private:
         SkPaint textPaint;
         textPaint.setColor(SK_ColorBLACK);
         textPaint.setAntiAlias(true);
-        SkFont textFont(SkTypeface::MakeDefault(), 64); // Default typeface, size 64
+#ifdef __linux__
+    sk_sp<SkFontConfigInterface> fc(SkFontConfigInterface::RefGlobal());
+    sk_sp<SkTypeface> typeface(SkFontMgr_New_FCI(std::move(fc))->legacyMakeTypeface("",SkFontStyle()));
+#endif
+#ifdef __APPLE__
+    sk_sp<SkTypeface> typeface(SkFontMgr_New_CoreText(nullptr)->legacyMakeTypeface("",SkFontStyle()));
+#endif
+        SkFont textFont(typeface, 64); // Default typeface, size 64
 
         // Position the text (same as in original SDL example)
         canvas->drawString("Skia", 500, 390, textFont, textPaint);
@@ -137,7 +157,11 @@ private:
         // --- End drawing commands ---
 
         // Flush and present
-        m_surface->flushAndSubmit();
+        auto direct = GrAsDirectContext(m_surface->recordingContext());
+        if (direct) {
+          direct->flush(m_surface.get(), SkSurfaces::BackendSurfaceAccess::kNoAccess, GrFlushInfo());
+          direct->submit();
+        }
         glFlush();
         SwapBuffers();
     }
