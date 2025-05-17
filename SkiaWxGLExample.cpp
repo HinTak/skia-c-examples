@@ -7,9 +7,14 @@
 #include <SkPath.h>
 #include <SkGraphics.h>
 #include <SkImageInfo.h>
+#include <SkColorSpace.h>
 #include <GrDirectContext.h>
 #include <GL/gl.h>
+#include <include/gpu/ganesh/SkSurfaceGanesh.h> // SkSurfaces::WrapBackendRenderTarget
+#include <include/gpu/ganesh/GrBackendSurface.h> // GrBackendRenderTarget
 #include <include/gpu/ganesh/gl/GrGLInterface.h>
+#include <include/gpu/ganesh/gl/GrGLDirectContext.h> // GrDirectContexts
+#include <include/gpu/ganesh/gl/GrGLBackendSurface.h> // GrBackendRenderTargets
 
 // Custom wxGLCanvas for Skia drawing
 class SkiaGLPanel : public wxGLCanvas
