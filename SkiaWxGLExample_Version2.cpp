@@ -1,4 +1,5 @@
 #include <wx/wx.h>
+#include <GL/glew.h>
 #include <wx/glcanvas.h>
 #include <SkSurface.h>
 #include <SkCanvas.h>
@@ -6,12 +7,16 @@
 #include <SkPath.h>
 #include <SkGraphics.h>
 #include <SkImageInfo.h>
+#include <SkColorSpace.h>
 #include <GrDirectContext.h>
 #include <SkFont.h>
 #include <SkTypeface.h>
-#include <gl/glew.h>
-#include <gl/GL.h>
-#include <include/gpu/gl/GrGLInterface.h>
+#include <GL/gl.h>
+#include <include/gpu/ganesh/SkSurfaceGanesh.h> // SkSurfaces::WrapBackendRenderTarget
+#include <include/gpu/ganesh/GrBackendSurface.h> // GrBackendRenderTarget
+#include <include/gpu/ganesh/gl/GrGLInterface.h>
+#include <include/gpu/ganesh/gl/GrGLDirectContext.h> // GrDirectContexts
+#include <include/gpu/ganesh/gl/GrGLBackendSurface.h> // GrBackendRenderTargets
 
 class SkiaGLPanel : public wxGLCanvas
 {
@@ -63,7 +68,7 @@ public:
 
         if (!m_skContext) {
             auto interface = GrGLMakeNativeInterface();
-            m_skContext = GrDirectContext::MakeGL(interface);
+            m_skContext = GrDirectContexts::MakeGL(interface);
         }
 
         if (!m_surface || m_lastWidth != width || m_lastHeight != height) {
@@ -71,11 +76,11 @@ public:
             fbInfo.fFBOID = 0;
             fbInfo.fFormat = GL_RGBA8;
 
-            GrBackendRenderTarget backendRenderTarget(width, height, 0, 0, fbInfo);
+            GrBackendRenderTarget backendRenderTarget = GrBackendRenderTargets::MakeGL(width, height, 0, 0, fbInfo);
 
             SkColorType colorType = kRGBA_8888_SkColorType;
 
-            m_surface = SkSurface::MakeFromBackendRenderTarget(
+            m_surface = SkSurfaces::WrapBackendRenderTarget(
                 m_skContext.get(),
                 backendRenderTarget,
                 kBottomLeft_GrSurfaceOrigin,
@@ -130,7 +135,11 @@ public:
         SkFont font(SkTypeface::MakeDefault(), 64);
         canvas->drawString("Skia", 400, 250, font, textPaint);
 
-        m_surface->flushAndSubmit();
+        auto direct = GrAsDirectContext(m_surface->recordingContext());
+        if (direct) {
+          direct->flush(m_surface.get(), SkSurfaces::BackendSurfaceAccess::kNoAccess, GrFlushInfo());
+          direct->submit();
+        }
         glFlush();
         SwapBuffers();
     }
