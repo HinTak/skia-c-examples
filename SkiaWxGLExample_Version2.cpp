@@ -17,6 +17,14 @@
 #include <include/gpu/ganesh/gl/GrGLInterface.h>
 #include <include/gpu/ganesh/gl/GrGLDirectContext.h> // GrDirectContexts
 #include <include/gpu/ganesh/gl/GrGLBackendSurface.h> // GrBackendRenderTargets
+#include "include/core/SkFontMgr.h"
+#ifdef __linux__
+#include "include/ports/SkFontConfigInterface.h"
+#include "include/ports/SkFontMgr_FontConfigInterface.h"
+#endif
+#ifdef __APPLE__
+#include "include/ports/SkFontMgr_mac_ct.h"
+#endif
 
 class SkiaGLPanel : public wxGLCanvas
 {
@@ -132,7 +140,14 @@ public:
         SkPaint textPaint;
         textPaint.setColor(SK_ColorBLACK);
         textPaint.setAntiAlias(true);
-        SkFont font(SkTypeface::MakeDefault(), 64);
+ #ifdef __linux__
+    sk_sp<SkFontConfigInterface> fc(SkFontConfigInterface::RefGlobal());
+    sk_sp<SkTypeface> typeface(SkFontMgr_New_FCI(std::move(fc))->legacyMakeTypeface("",SkFontStyle()));
+#endif
+#ifdef __APPLE__
+    sk_sp<SkTypeface> typeface(SkFontMgr_New_CoreText(nullptr)->legacyMakeTypeface("",SkFontStyle()));
+#endif
+        SkFont font(typeface, 64);
         canvas->drawString("Skia", 400, 250, font, textPaint);
 
         auto direct = GrAsDirectContext(m_surface->recordingContext());
