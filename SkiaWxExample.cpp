@@ -29,7 +29,7 @@ public:
         SkImageInfo info = SkImageInfo::MakeN32Premul(size.x, size.y);
         std::vector<uint32_t> pixels(size.x * size.y);
 
-        sk_sp<SkSurface> surface = SkSurface::MakeRasterDirect(
+        sk_sp<SkSurface> surface = SkSurfaces::WrapPixels(
             info, pixels.data(), size.x * 4);
 
         SkCanvas* canvas = surface->getCanvas();
