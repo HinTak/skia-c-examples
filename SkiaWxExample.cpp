@@ -70,6 +70,7 @@ public:
         unsigned char *rgba = (unsigned char *)pixels.data();
 
         wxAlphaPixelData bmdata( bmp );
+        /*
         wxAlphaPixelData::Iterator dst(bmdata);
 
         // the size of the RGBA buffer must match the dimensions of the bitmap
@@ -89,6 +90,9 @@ public:
                 rgba += 4;
             }
         }
+        */
+        auto pbmp = bmp.GetRawData(bmdata, 32); // Don't know how portable GetRawData is
+        memcpy(pbmp, rgba, size.x * size.y * 4);
         dc.DrawBitmap(bmp, 0, 0, false);
     }
 };
