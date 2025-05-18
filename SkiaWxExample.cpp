@@ -12,6 +12,7 @@
  */
 #include <wx/wx.h>
 #include <wx/dcbuffer.h>
+#include <wx/rawbmp.h>
 #include <SkSurface.h>
 #include <SkCanvas.h>
 #include <SkPaint.h>
@@ -37,8 +38,8 @@ public:
         wxAutoBufferedPaintDC dc(this);
         wxSize size = GetClientSize();
 
-        // Create Skia surface using BGRA32 pixels on a wxMemoryDC
-        SkImageInfo info = SkImageInfo::MakeN32Premul(size.x, size.y);
+        // Create Skia surface using RGBA32 pixels / Premul to match wxBitmap
+        SkImageInfo info = SkImageInfo::Make(size.x, size.y, kRGBA_8888_SkColorType, kPremul_SkAlphaType);
         std::vector<uint32_t> pixels(size.x * size.y);
 
         sk_sp<SkSurface> surface = SkSurfaces::WrapPixels(
@@ -65,22 +66,29 @@ public:
         canvas->drawPath(path, paint);
 
         // Transfer Skia's output to wxDC
-        wxImage img(size.x, size.y, false);
-        unsigned char* dst = img.GetData();
-        uint32_t* src = pixels.data();
-        for (int y = 0; y < size.y; ++y)
-        {
-            for (int x = 0; x < size.x; ++x)
-            {
-                uint32_t pixel = src[y * size.x + x];
-                // Skia pixel is BGRA; wxImage wants RGB
-                dst[0] = (pixel >> 16) & 0xFF; // R
-                dst[1] = (pixel >> 8) & 0xFF;  // G
-                dst[2] = (pixel) & 0xFF;       // B
-                dst += 3;
+        wxBitmap bmp(size.x, size.y, 32);
+        unsigned char *rgba = (unsigned char *)pixels.data();
+
+        wxAlphaPixelData bmdata( bmp );
+        wxAlphaPixelData::Iterator dst(bmdata);
+
+        // the size of the RGBA buffer must match the dimensions of the bitmap
+        const int w = bmp.GetWidth();
+        const int h = bmp.GetHeight();
+
+        for( int y = 0; y < h; y++) {
+            dst.MoveTo(bmdata, 0, y);
+            for(int x = 0; x < w; x++) {
+                // wxBitmap contains rgb values pre-multiplied with alpha,
+                // exactly what Skia was configured for.
+                dst.Red() = rgba[0];
+                dst.Green() = rgba[1];
+                dst.Blue() = rgba[2];
+                dst.Alpha() = rgba[3];
+                dst++;
+                rgba += 4;
             }
         }
-        wxBitmap bmp(img);
         dc.DrawBitmap(bmp, 0, 0, false);
     }
 };
