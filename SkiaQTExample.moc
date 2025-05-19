@@ -1,0 +1,4 @@
+// This file is intentionally left blank.
+// Qt's MOC (Meta-Object Compiler) will auto-generate the needed code at build time.
+// You do NOT need to manually write or edit this file.
+// It is included for build clarity and to satisfy the #include "SkiaQTExample.moc" at the end of SkiaQTExample.cpp.
