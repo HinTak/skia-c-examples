@@ -20,7 +20,7 @@ link_directories(${SKIA_DIR})
 
 # Pick Skia libraries you need - edit as required for your build.
 set(SKIA_LIBS
-    ${SKIA_DIR}/libskia.a
+    ${SKIA_DIR}/out/Release/libskia.a
     # Add any additional Skia or system libraries as needed.
     GL
     pthread

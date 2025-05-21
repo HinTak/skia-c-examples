@@ -33,6 +33,7 @@
 #include "include/core/SkSurface.h"
 #include "include/core/SkCanvas.h"
 #include "include/core/SkPaint.h"
+#include "include/core/SkColorSpace.h"
 #include "include/core/SkFont.h"
 #include "include/core/SkPath.h"
 #include "src/base/SkRandom.h"
@@ -40,6 +41,8 @@
 #include "include/core/SkFontMgr.h"
 #include "include/ports/SkFontConfigInterface.h"
 #include "include/ports/SkFontMgr_FontConfigInterface.h"
+#include <include/gpu/ganesh/GrBackendSurface.h> // GrBackendRenderTarget
+#include <include/gpu/ganesh/SkSurfaceGanesh.h> // SkSurfaces::WrapBackendRenderTarget
 
 // Helper: create a star shape
 static SkPath create_star() {
@@ -102,7 +105,7 @@ protected:
 
         SkColorType colorType = kRGBA_8888_SkColorType;
 
-        GrBackendRenderTarget backendRenderTarget(
+        GrBackendRenderTarget backendRenderTarget = GrBackendRenderTargets::MakeGL(
             w, h,           // width, height
             0,              // sample count
             8,              // stencil bits
