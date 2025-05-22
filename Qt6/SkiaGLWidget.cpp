@@ -1,7 +1,13 @@
 #include "SkiaGLWidget.h"
 #include <QOpenGLContext>
-#include "include/gpu/gl/GrGLInterface.h"
+#include "include/core/SkCanvas.h"
+#include "include/core/SkColorSpace.h"
+#include "include/gpu/ganesh/gl/GrGLInterface.h"
+#include "include/gpu/ganesh/gl/GrGLDirectContext.h" // GrDirectContexts
+#include "include/gpu/ganesh/gl/GrGLBackendSurface.h" // GrBackendRenderTargets
 #include "include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "include/gpu/ganesh/GrDirectContext.h" // GrAsDirectContext
+#include "include/gpu/ganesh/GrBackendSurface.h" // GrBackendRenderTarget
 
 SkiaGLWidget::SkiaGLWidget(QWidget* parent)
     : QOpenGLWidget(parent)
@@ -15,7 +21,7 @@ void SkiaGLWidget::initializeGL()
     initializeOpenGLFunctions();
 
     auto interface = GrGLMakeNativeInterface();
-    fContext = GrDirectContext::MakeGL(interface);
+    fContext = GrDirectContexts::MakeGL(interface);
 
     resizeGL(width(), height());
 }
@@ -30,7 +36,7 @@ void SkiaGLWidget::resizeGL(int w, int h)
 
     SkColorType colorType = kRGBA_8888_SkColorType;
 
-    GrBackendRenderTarget backendRenderTarget(w, h, 
+    GrBackendRenderTarget backendRenderTarget = GrBackendRenderTargets::MakeGL(w, h,
         this->format().samples(),
         this->format().stencilBufferSize(),
         fbInfo);
@@ -65,6 +71,10 @@ void SkiaGLWidget::paintGL()
     canvas->drawRect(SkRect::MakeXYWH(50, 50, 200, 200), paint);
 
     // Flush Skia drawing
-    fSurface->flushAndSubmit();
+    auto direct = GrAsDirectContext(fSurface->recordingContext());
+    if (direct) {
+      direct->flush(fSurface.get(), SkSurfaces::BackendSurfaceAccess::kNoAccess, GrFlushInfo());
+      direct->submit();
+    }
     fContext->flush();
 }

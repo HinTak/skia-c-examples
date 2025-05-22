@@ -3,7 +3,7 @@
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
 #include "include/core/SkSurface.h"
-#include "include/gpu/GrDirectContext.h"
+#include "include/gpu/ganesh/GrDirectContext.h"
 
 class SkiaGLWidget : public QOpenGLWidget, protected QOpenGLFunctions
 {
@@ -18,6 +18,6 @@ protected:
     void paintGL() override;
 
 private:
-    std::unique_ptr<GrDirectContext> fContext;
+    sk_sp<GrDirectContext> fContext;
     sk_sp<SkSurface> fSurface;
 };

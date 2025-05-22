@@ -9,6 +9,7 @@
 #include "include/core/SkPaint.h"
 #include "include/core/SkImageInfo.h"
 #include "include/core/SkColor.h"
+#include "include/gpu/ganesh/GrDirectContext.h" // GrAsDirectContext
 
 class SkiaWidget : public QWidget {
     Q_OBJECT
@@ -49,7 +50,11 @@ protected:
         canvas->drawRect(SkRect::MakeXYWH(100, 100, 200, 200), paint);
 
         // Flush Skia drawing
-        skSurface->flushAndSubmit();
+        auto direct = GrAsDirectContext(skSurface->recordingContext());
+        if (direct) {
+          direct->flush(skSurface.get(), SkSurfaces::BackendSurfaceAccess::kNoAccess, GrFlushInfo());
+          direct->submit();
+        }
 
         // Get Skia's pixel buffer
         SkPixmap pixmap;

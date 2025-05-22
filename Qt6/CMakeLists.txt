@@ -7,14 +7,16 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 # --- Qt6
-find_package(Qt6 COMPONENTS Widgets OpenGL REQUIRED)
+find_package(Qt6 COMPONENTS OpenGLWidgets Widgets REQUIRED)
 
 # --- Skia
 # Set SKIA_DIR or use system-wide Skia
-set(SKIA_DIR "/path/to/skia")  # Change this to your SkIA build path
+if(NOT SKIA_DIR)
+    message(FATAL_ERROR "Please set SKIA_DIR to your Skia build directory (e.g. ~/skia/out/Static)")
+endif()
 
-include_directories(${SKIA_DIR}/include)
-link_directories(${SKIA_DIR}/out/Static) # Or wherever your Skia .a/.lib files are
+include_directories(${SKIA_DIR})
+link_directories(${SKIA_DIR}/out/Release) # Or wherever your Skia .a/.lib files are
 
 # List Skia libs you need (example for static build)
 set(SKIA_LIBS
@@ -29,8 +31,14 @@ add_executable(SkiaQtExample
 )
 
 target_link_libraries(SkiaQtExample
+    Qt6::OpenGLWidgets
     Qt6::Widgets
-    Qt6::OpenGL
     ${SKIA_LIBS}
     # Add more (pthread, dl, etc.) if required by Skia on your platform
+    webp
+    webpdemux
+    freetype
+    jpeg
+    png
+    z
 )
