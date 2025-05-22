@@ -7,7 +7,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 # --- Qt6
-find_package(Qt6 COMPONENTS OpenGLWidgets Widgets REQUIRED)
+find_package(Qt5 COMPONENTS OpenGL Widgets REQUIRED)
 
 # --- Skia
 # Set SKIA_DIR or use system-wide Skia
@@ -31,10 +31,11 @@ add_executable(SkiaQtExample
 )
 
 target_link_libraries(SkiaQtExample
-    Qt6::OpenGLWidgets
-    Qt6::Widgets
+    Qt5::OpenGL
+    Qt5::Widgets
     ${SKIA_LIBS}
     # Add more (pthread, dl, etc.) if required by Skia on your platform
+    GL
     webp
     webpdemux
     freetype
