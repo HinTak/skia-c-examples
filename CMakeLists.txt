@@ -23,6 +23,13 @@ set(SKIA_LIBS
     ${SKIA_DIR}/out/Release/libskia.a
     # Add any additional Skia or system libraries as needed.
     GL
+    fontconfig
+    webp
+    webpdemux
+    freetype
+    jpeg
+    png
+    z
     pthread
     dl
 )
@@ -30,7 +37,6 @@ set(SKIA_LIBS
 # ---- Sources ----
 set(SOURCES
     SkiaQTExample.cpp
-    SkiaQTExample.moc # This file is blank, but needed for build clarity
 )
 
 add_executable(SkiaQTExample ${SOURCES})
