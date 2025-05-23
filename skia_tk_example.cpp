@@ -12,6 +12,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <X11/Xutil.h> // XEvent + XK_Escape
 
 #include "include/core/SkSurface.h"
 #include "include/core/SkCanvas.h"
@@ -20,7 +21,7 @@
 #include "include/core/SkPaint.h"
 #include "include/core/SkImage.h"
 #include "include/core/SkData.h"
-#include "include/utils/SkRandom.h"
+#include "src/base/SkRandom.h"
 
 // Window and drawing state
 struct Rect {
@@ -37,7 +38,7 @@ struct ApplicationState {
     float rotation = 0;
     Tk_PhotoHandle tk_photo = nullptr;
     Tk_PhotoImageBlock tk_block;
-    std::unique_ptr<SkSurface> surface;
+    sk_sp<SkSurface> surface;
     SkFont font;
     ApplicationState() : font(SkFont(nullptr, 18.0f)) {}
 };
@@ -49,7 +50,7 @@ Tcl_Interp *gInterp;
 Tk_Canvas gCanvas;
 Tk_PhotoHandle gPhotoHandle;
 Tk_PhotoImageBlock gLastBlock;
-Tk_TimerToken gAnimToken = nullptr;
+Tcl_TimerToken gAnimToken = nullptr;
 
 const char *HELP_MESSAGE = "Click and drag to create rects.  Press esc to quit.";
 
@@ -113,7 +114,7 @@ void OnConfigure(ClientData, XEvent *eventPtr) {
         if (w != gState.window_width || h != gState.window_height) {
             gState.window_width = w;
             gState.window_height = h;
-            gState.surface = SkSurface::MakeRasterN32Premul(gState.window_width, gState.window_height);
+            gState.surface = SkSurfaces::Raster(SkImageInfo::MakeN32Premul(gState.window_width, gState.window_height));
             draw();
         }
     }
@@ -176,15 +177,15 @@ void skia_to_photoimage(SkSurface *surface, Tk_PhotoHandle photo, int w, int h) 
     block.offset[3] = 3; // Alpha
     block.pixelPtr = reinterpret_cast<unsigned char *>(pixels.data());
 
-    Tk_PhotoSetSize(photo, w, h);
-    Tk_PhotoPutBlock(photo, &block, 0, 0, w, h, TK_PHOTO_COMPOSITE_SET);
+    Tk_PhotoSetSize(gInterp, photo, w, h);
+    Tk_PhotoPutBlock(gInterp, photo, &block, 0, 0, w, h, TK_PHOTO_COMPOSITE_SET);
     // pixels will be destroyed after this function, but Tk copies the data.
 }
 
 // Drawing logic
 void draw() {
     if (!gState.surface)
-        gState.surface = SkSurface::MakeRasterN32Premul(gState.window_width, gState.window_height);
+        gState.surface = SkSurfaces::Raster(SkImageInfo::MakeN32Premul(gState.window_width, gState.window_height));
     SkCanvas *canvas = gState.surface->getCanvas();
     canvas->clear(SK_ColorWHITE);
 
