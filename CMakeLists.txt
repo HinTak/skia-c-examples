@@ -7,7 +7,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 # ---- Find Qt ----
-find_package(Qt5 COMPONENTS Widgets OpenGL REQUIRED)
+find_package(Qt6 COMPONENTS Widgets OpenGLWidgets REQUIRED)
 
 # ---- Skia ----
 # You must set SKIA_DIR to your local Skia build directory, or edit these paths.
@@ -22,7 +22,6 @@ link_directories(${SKIA_DIR})
 set(SKIA_LIBS
     ${SKIA_DIR}/out/Release/libskia.a
     # Add any additional Skia or system libraries as needed.
-    GL
     fontconfig
     webp
     webpdemux
@@ -42,8 +41,8 @@ set(SOURCES
 add_executable(SkiaQTExample ${SOURCES})
 
 target_link_libraries(SkiaQTExample
-    Qt5::Widgets
-    Qt5::OpenGL
+    Qt6::OpenGLWidgets
+    Qt6::Widgets
     ${SKIA_LIBS}
 )
 
