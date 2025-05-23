@@ -1,3 +1,12 @@
+/*
+  c++ -std=c++17 -O2 \
+  -I./skia \
+  -I/usr/include/tcl8.6 -I/usr/include/tk8.6 \
+  skia_tk_example.cpp \
+  -L./skia/out/Release \
+  -lskia -ltcl8.6 -ltk8.6 -lfreetype -lwebp -lwebpdemux -lpng -ljpeg -lX11 -lpthread -ldl -lz -lm \
+  -o skia_tk_example
+*/
 // Build with: g++ -std=c++17 -O2 -I/path/to/skia/include -I/usr/include/tcl8.6 -I/usr/include/tk8.6 skia_tk_example.cpp -L/path/to/skia/out/static -lskia -ltcl8.6 -ltk8.6 -lpthread -ldl -lz -lm -o skia_tk_example
 // Make sure Skia and Tk libraries are available in your build environment.
 
