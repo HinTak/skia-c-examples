@@ -129,6 +129,17 @@ protected:
         SkPaint paint;
         paint.setColor(SK_ColorBLACK);
 
+        // create a surface for CPU rasterization
+        sk_sp<SkSurface> cpuSurface(SkSurfaces::Raster(canvas->imageInfo()));
+
+        SkCanvas* offscreen = cpuSurface->getCanvas();
+        offscreen->save();
+        offscreen->translate(50.0f, 50.0f);
+        offscreen->drawPath(create_star(), paint);
+        offscreen->restore();
+
+        sk_sp<SkImage> image = cpuSurface->makeImageSnapshot();
+
         sk_sp<SkFontConfigInterface> fc(SkFontConfigInterface::RefGlobal());
         sk_sp<SkTypeface> typeface(SkFontMgr_New_FCI(std::move(fc))->legacyMakeTypeface("",SkFontStyle()));
         SkFont font(typeface);
@@ -147,7 +158,11 @@ protected:
         canvas->translate(width() / 2.0f, height() / 2.0f);
         canvas->rotate(rotation);
         paint.setColor(SK_ColorBLACK);
+#ifndef QT6
+        canvas->drawImage(image, -50.0f, -50.0f);
+#else
         canvas->drawPath(create_star(), paint);
+#endif
         canvas->restore();
 
         // Flush Skia drawing
