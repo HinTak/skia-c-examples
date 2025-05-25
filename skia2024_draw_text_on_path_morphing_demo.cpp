@@ -11,13 +11,16 @@
 #include "include/core/SkTypeface.h"
 #include "include/core/SkStream.h"
 #include "include/core/SkData.h"
-#include "include/core/SkEncodedImageFormat.h"
-#include "include/core/SkImageEncoder.h"
-#include "include/utils/SkContourMeasure.h"
+#include "include/codec/SkEncodedImageFormat.h"
+#include "include/encode/SkPngEncoder.h"
+#include "include/core/SkContourMeasure.h"
 #include <vector>
 #include <cstring>
 #include <cmath>
 #include <memory>
+#include "include/core/SkFontMgr.h"
+#include "include/ports/SkFontConfigInterface.h"
+#include "include/ports/SkFontMgr_FontConfigInterface.h"
 
 // --- Morphing "draw text on path" implementation ---
 
@@ -110,7 +113,7 @@ void drawTextOnPathMorphing(
     font.getWidths(glyphs.data(), glyphCount, advances.data());
 
     SkContourMeasureIter iter(path, false, 1.0f);
-    std::unique_ptr<SkContourMeasure> contour(iter.next());
+    sk_sp<SkContourMeasure> contour(iter.next());
     if (!contour) return;
     SkScalar pathLength = contour->length();
 
@@ -135,12 +138,13 @@ void drawTextOnPathMorphing(
 int main(int argc, char** argv) {
     // Create a raster surface (800x400)
     SkImageInfo info = SkImageInfo::MakeN32Premul(800, 400);
-    auto surface = SkSurface::MakeRaster(info);
+    auto surface = SkSurfaces::Raster(info);
     SkCanvas* canvas = surface->getCanvas();
     canvas->clear(SK_ColorWHITE);
 
     // Load typeface (use system default if nullptr)
-    sk_sp<SkTypeface> typeface = SkTypeface::MakeDefault();
+    sk_sp<SkFontConfigInterface> fc(SkFontConfigInterface::RefGlobal());
+    sk_sp<SkTypeface> typeface(SkFontMgr_New_FCI(std::move(fc))->legacyMakeTypeface("",SkFontStyle()));
     SkFont font(typeface, 72);
 
     // Create a path: a simple sine wave
@@ -166,7 +170,7 @@ int main(int argc, char** argv) {
     // Save to PNG file
     auto image = surface->makeImageSnapshot();
     if (image) {
-        sk_sp<SkData> png(image->encodeToData(SkEncodedImageFormat::kPNG, 100));
+        auto png = SkPngEncoder::Encode(nullptr, image.get(), {});
         if (png) {
             SkFILEWStream out("morphing_text_on_path.png");
             out.write(png->data(), png->size());
