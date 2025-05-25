@@ -29,7 +29,7 @@ void DrawTextOnPath_Morphing2025(
 
     // Path measure
     SkContourMeasureIter iter(path, false, 1.0f);
-    std::unique_ptr<SkContourMeasure> contour = iter.next();
+    sk_sp<SkContourMeasure> contour = iter.next();
     if (!contour) return;
     SkScalar pathLength = contour->length();
 
