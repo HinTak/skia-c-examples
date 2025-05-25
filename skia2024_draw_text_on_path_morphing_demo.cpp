@@ -157,6 +157,7 @@ int main(int argc, char** argv) {
 
     // Draw the curve for reference
     SkPaint pathPaint;
+    pathPaint.setAntiAlias(true);
     pathPaint.setStyle(SkPaint::kStroke_Style);
     pathPaint.setColor(SK_ColorBLUE);
     pathPaint.setStrokeWidth(2);
@@ -164,6 +165,7 @@ int main(int argc, char** argv) {
 
     // Draw morphing text
     SkPaint textPaint;
+    textPaint.setAntiAlias(true);
     textPaint.setColor(SK_ColorBLACK);
     drawTextOnPathMorphing(canvas, "Morphing Text On Path!", font, curve, 0, 0, textPaint);
 
