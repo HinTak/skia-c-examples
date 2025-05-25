@@ -1,3 +1,5 @@
+// clang++ main.cpp -std=c++17 -I./skia -L./skia/out/Release -lskia -lfreetype -lwebp -ljpeg -lwebpdemux -lpng -lz -lfontconfig  -o morphtext
+
 // Minimal Skia 2025+ sample: True glyph morphing on path
 // Build with: clang++ main.cpp -std=c++17 -I/path/to/skia/include -L/path/to/skia/out/Release -lskia -o morphtext
 // (You must link Skia and its dependencies. Adjust include/library paths as needed.)
@@ -7,7 +9,8 @@
 #include "include/core/SkPaint.h"
 #include "include/core/SkPath.h"
 #include "include/core/SkSurface.h"
-#include "include/core/SkImageEncoder.h"
+#include "include/codec/SkEncodedImageFormat.h"
+#include "include/encode/SkPngEncoder.h"
 #include "include/core/SkStream.h"
 #include "include/core/SkContourMeasure.h"
 #include "include/core/SkPathBuilder.h"
@@ -15,6 +18,9 @@
 #include <iostream>
 #include <vector>
 #include <cstring>
+#include "include/core/SkFontMgr.h"
+#include "include/ports/SkFontConfigInterface.h"
+#include "include/ports/SkFontMgr_FontConfigInterface.h"
 
 static SkVector getNormal(const SkVector& tangent) {
     return SkVector::Make(-tangent.fY, tangent.fX);
@@ -36,7 +42,7 @@ void DrawTextOnPath_Morphing2025(
     font.getWidths(glyphs.data(), glyphCount, advances.data());
 
     SkContourMeasureIter iter(path, false, 1.0f);
-    std::unique_ptr<SkContourMeasure> contour = iter.next();
+    sk_sp<SkContourMeasure> contour = iter.next();
     if (!contour) return;
     SkScalar pathLength = contour->length();
 
@@ -138,7 +144,7 @@ void DrawTextOnPath_Morphing2025(
 
 int main() {
     const int W = 800, H = 400;
-    sk_sp<SkSurface> surface = SkSurface::MakeRasterN32Premul(W, H);
+    sk_sp<SkSurface> surface = SkSurfaces::Raster(SkImageInfo::MakeN32Premul(W, H));
     SkCanvas* canvas = surface->getCanvas();
     canvas->clear(SK_ColorWHITE);
 
@@ -156,7 +162,8 @@ int main() {
     canvas->drawPath(myPath, pathPaint);
 
     // Prepare font
-    sk_sp<SkTypeface> typeface = SkTypeface::MakeDefault();
+    sk_sp<SkFontConfigInterface> fc(SkFontConfigInterface::RefGlobal());
+    sk_sp<SkTypeface> typeface(SkFontMgr_New_FCI(std::move(fc))->legacyMakeTypeface("",SkFontStyle()));
     SkFont font(typeface, 64); // font size 64
 
     // Prepare paint
@@ -170,7 +177,8 @@ int main() {
     // Save result to PNG
     sk_sp<SkImage> img(surface->makeImageSnapshot());
     SkFILEWStream out("morphed_text.png");
-    img->encodeToStream(SkEncodedImageFormat::kPNG, 100, &out);
+    auto data = SkPngEncoder::Encode(nullptr, img.get(), {});
+    out.write(data->data(), data->size());
 
     std::cout << "Wrote morphed_text.png\n";
     return 0;
