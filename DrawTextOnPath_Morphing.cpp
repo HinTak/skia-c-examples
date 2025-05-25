@@ -3,7 +3,7 @@
 #include "include/core/SkPath.h"
 #include "include/core/SkPaint.h"
 #include "include/utils/SkTextUtils.h"
-#include "include/utils/SkContourMeasure.h"
+#include "include/core/SkContourMeasure.h"
 #include <vector>
 #include <cmath>
 
@@ -50,7 +50,9 @@ void DrawTextOnPath_Morphing(
         // Decompose glyph path to points & commands
         SkPath morphedPath;
         SkPoint lastPt = {0, 0};
-        glyphPath.iterate([&](SkPath::Verb verb, const SkPoint pts[4]) {
+        SkPath::Iter it(morphedPath, false);
+        SkPoint pts[4];
+        for (SkPath::Verb verb = it.next(pts); verb != SkPath::kDone_Verb; verb = it.next(pts)) {
             switch (verb) {
                 case SkPath::kMove_Verb: {
                     // Map start point
@@ -122,8 +124,7 @@ void DrawTextOnPath_Morphing(
                 default:
                     break;
             }
-            return true;
-        });
+        };
 
         canvas->drawPath(morphedPath, paint);
 
