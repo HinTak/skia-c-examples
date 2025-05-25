@@ -150,21 +150,24 @@ int main() {
 
     // Build a path (simple arc)
     SkPath myPath;
-    myPath.moveTo(100, 200);
-    myPath.arcTo(600, 200, 700, 200, 300); // large arc
+    myPath.moveTo(60, 200);
+    for (int x = 60; x <= 740; x += 10) {
+        float y = 200 + 60 * std::sin(2 * 3.14159f * (x-60) / 350);
+        myPath.lineTo(x, y);
+    }
 
     // Draw the guide path
     SkPaint pathPaint;
     pathPaint.setAntiAlias(true);
     pathPaint.setStyle(SkPaint::kStroke_Style);
-    pathPaint.setColor(SK_ColorLTGRAY);
-    pathPaint.setStrokeWidth(4);
+    pathPaint.setColor(SK_ColorBLUE);
+    pathPaint.setStrokeWidth(2);
     canvas->drawPath(myPath, pathPaint);
 
     // Prepare font
     sk_sp<SkFontConfigInterface> fc(SkFontConfigInterface::RefGlobal());
     sk_sp<SkTypeface> typeface(SkFontMgr_New_FCI(std::move(fc))->legacyMakeTypeface("",SkFontStyle()));
-    SkFont font(typeface, 64); // font size 64
+    SkFont font(typeface, 72); // font size 72
 
     // Prepare paint
     SkPaint paint;
@@ -172,7 +175,7 @@ int main() {
     paint.setColor(SK_ColorBLACK);
 
     // Draw morphed text
-    DrawTextOnPath_Morphing2025(canvas, "Morph!", font, myPath, 0, 0, paint);
+    DrawTextOnPath_Morphing2025(canvas, "Morphing Text On Path!", font, myPath, 0, 0, paint);
 
     // Save result to PNG
     sk_sp<SkImage> img(surface->makeImageSnapshot());
