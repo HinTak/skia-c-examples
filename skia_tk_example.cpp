@@ -241,7 +241,6 @@ int main(int argc, char **argv) {
     if (Tk_Init(gInterp) == TCL_ERROR) return 1;
 
     // Create root window
-    Tk_MainWindow(gInterp);
     gMainWin = Tk_MainWindow(gInterp);
     if (!gMainWin) {
         std::cerr << "Failed to get Tk main window via Tk_MainWindow" << std::endl;
