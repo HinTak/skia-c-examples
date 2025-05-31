@@ -247,6 +247,10 @@ int main(int argc, char **argv) {
     Tcl_Eval(gInterp, "pack .c -fill both -expand 1");
     Tcl_DoOneEvent(0);  // Force Tk to process widget creation
     gMainWin = Tk_NameToWindow(gInterp, ".", nullptr);
+    if (!gMainWin) {
+      std::cerr << "Failed to get Tk main window" << std::endl;
+      return 1;
+    }
     gWin = Tk_NameToWindow(gInterp, ".c", gMainWin);
     if (!gWin) {
       std::cerr << "Failed to get Tk window for .c" << std::endl;
@@ -256,6 +260,10 @@ int main(int argc, char **argv) {
     // Create Tk PhotoImage
     Tcl_Eval(gInterp, "image create photo skimg");
     gState.tk_photo = Tk_FindPhoto(gInterp, "skimg");
+    if (!gState.tk_photo) {
+      std::cerr << "Failed to create/find Tk PhotoImage 'skimg'" << std::endl;
+      return 1;
+    }
 
     // Bind events
     Tk_CreateEventHandler(gWin, ButtonPressMask, OnMouseDown, nullptr);
