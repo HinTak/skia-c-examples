@@ -254,10 +254,18 @@ int main(int argc, char **argv) {
      *
      *    Tcl_DoOneEvent(0);  // Force Tk to process widget creation
      *    gMainWin = Tk_NameToWindow(gInterp, ".", nullptr);
+     *
+     * This does work:
+     *    gMyself = Tk_NameToWindow(gInterp, ".", gMainWin);
      */
     Tk_Window gMainWinTmp = Tk_NameToWindow(gInterp, ".", nullptr);
     if (!gMainWinTmp) {
       std::cerr << "You can't get Tk main window via Tk_NameToWindow: ("  << Tcl_GetStringResult(gInterp) << ") - OK!" << std::endl;
+      Tk_Window gMyself = Tk_NameToWindow(gInterp, ".", gMainWin);
+      if (!gMyself)
+        std::cerr << "gMyself failed!" << std::endl;
+      else
+        std::cerr << "gMyself succeeded!" << std::endl;
     }
     gWin = Tk_NameToWindow(gInterp, ".c", gMainWin);
     printf("MainWindow:%s %s\n", Tk_Name(gMainWin), Tk_PathName(gMainWin));
