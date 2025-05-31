@@ -244,7 +244,7 @@ int main(int argc, char **argv) {
     Tk_MainWindow(gInterp);
     gMainWin = Tk_MainWindow(gInterp);
     if (!gMainWin) {
-        std::cerr << "Failed to get Tk main window" << std::endl;
+        std::cerr << "Failed to get Tk main window via Tk_MainWindow" << std::endl;
         return 1;
     }
     Tcl_Eval(gInterp, "wm title . {Skia + Tk Example}");
@@ -253,7 +253,7 @@ int main(int argc, char **argv) {
     Tcl_DoOneEvent(0);  // Force Tk to process widget creation
     gMainWin = Tk_NameToWindow(gInterp, ".", nullptr);
     if (!gMainWin) {
-      std::cerr << "Failed to get Tk main window" << std::endl;
+      std::cerr << "Failed to get Tk main window via Tk_NameToWindow" << std::endl;
       return 1;
     }
     gWin = Tk_NameToWindow(gInterp, ".c", gMainWin);
