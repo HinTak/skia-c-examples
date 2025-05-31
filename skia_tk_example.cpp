@@ -245,6 +245,7 @@ int main(int argc, char **argv) {
     Tcl_Eval(gInterp, "wm title . {Skia + Tk Example}");
     Tcl_Eval(gInterp, "canvas .c -width 800 -height 600 -bg white");
     Tcl_Eval(gInterp, "pack .c -fill both -expand 1");
+    Tcl_DoOneEvent(0);  // Force Tk to process widget creation
     gMainWin = Tk_NameToWindow(gInterp, ".", nullptr);
     gWin = Tk_NameToWindow(gInterp, ".c", gMainWin);
 
