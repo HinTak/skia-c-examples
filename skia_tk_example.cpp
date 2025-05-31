@@ -243,13 +243,25 @@ int main(int argc, char **argv) {
     // Create root window
     gMainWin = Tk_MainWindow(gInterp);
     if (!gMainWin) {
-        std::cerr << "Failed to get Tk main window via Tk_MainWindow" << std::endl;
+        std::cerr << "Failed to get Tk main window via Tk_MainWindow:" << Tcl_GetStringResult(gInterp) << std::endl;
         return 1;
     }
     Tcl_Eval(gInterp, "wm title . {Skia + Tk Example}");
     Tcl_Eval(gInterp, "canvas .c -width 800 -height 600 -bg white");
     Tcl_Eval(gInterp, "pack .c -fill both -expand 1");
+    /*
+     * The main windows is special - getting it, by name, always fails:
+     *
+     *    Tcl_DoOneEvent(0);  // Force Tk to process widget creation
+     *    gMainWin = Tk_NameToWindow(gInterp, ".", nullptr);
+     */
+    Tk_Window gMainWinTmp = Tk_NameToWindow(gInterp, ".", nullptr);
+    if (!gMainWinTmp) {
+      std::cerr << "You can't get Tk main window via Tk_NameToWindow: ("  << Tcl_GetStringResult(gInterp) << ") - OK!" << std::endl;
+    }
     gWin = Tk_NameToWindow(gInterp, ".c", gMainWin);
+    printf("MainWindow:%s %s\n", Tk_Name(gMainWin), Tk_PathName(gMainWin));
+    printf("MainCanvas:%s %s\n", Tk_Name(gWin), Tk_PathName(gWin));
     if (!gWin) {
       std::cerr << "Failed to get Tk window for .c" << std::endl;
       return 1;
