@@ -251,7 +251,7 @@ int main(int argc, char **argv) {
     Tcl_Eval(gInterp, "canvas .c -width 800 -height 600 -bg white");
     Tcl_Eval(gInterp, "pack .c -fill both -expand 1");
     Tcl_DoOneEvent(0);  // Force Tk to process widget creation
-    gMainWin = Tk_NameToWindow(gInterp, ".", nullptr);
+    //gMainWin = Tk_NameToWindow(gInterp, ".", nullptr);
     if (!gMainWin) {
       std::cerr << "Failed to get Tk main window via Tk_NameToWindow" << std::endl;
       return 1;
