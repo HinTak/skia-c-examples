@@ -248,6 +248,10 @@ int main(int argc, char **argv) {
     Tcl_DoOneEvent(0);  // Force Tk to process widget creation
     gMainWin = Tk_NameToWindow(gInterp, ".", nullptr);
     gWin = Tk_NameToWindow(gInterp, ".c", gMainWin);
+    if (!gWin) {
+      std::cerr << "Failed to get Tk window for .c" << std::endl;
+      return 1;
+    }
 
     // Create Tk PhotoImage
     Tcl_Eval(gInterp, "image create photo skimg");
