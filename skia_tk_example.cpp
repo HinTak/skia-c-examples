@@ -253,7 +253,7 @@ int main(int argc, char **argv) {
     gState.tk_photo = Tk_FindPhoto(gInterp, "skimg");
 
     // Bind events
-    Tk_CreateEventHandler(gWin, ButtonPressMask, OnMouseDown, nullptr);
+    Tk_CreateEventHandler(gWin, ButtonPressMask, OnMouseDown, nullptr); // valgrind and gdb both says it crashes here.
     Tk_CreateEventHandler(gWin, ButtonReleaseMask, OnMouseUp, nullptr);
     Tk_CreateEventHandler(gWin, ButtonMotionMask, OnMouseDrag, nullptr);
     Tk_CreateEventHandler(gWin, StructureNotifyMask, OnConfigure, nullptr);
