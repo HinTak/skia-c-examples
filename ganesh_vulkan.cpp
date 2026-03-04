@@ -1,10 +1,3 @@
-/*
- * Copyright 2024 Google LLC
- *
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
- */
-
 #include "include/core/SkAlphaType.h"
 #include "include/core/SkCanvas.h"
 #include "include/core/SkColor.h"
@@ -20,18 +13,14 @@
 #include "include/gpu/vk/VulkanExtensions.h"
 
 int main(int argc, char** argv) {
-    // This will not run (since it's missing all the Vulkan setup code),
-    // but it should compile and link to test the build system.
     skgpu::VulkanBackendContext backendContext;
-
     std::unique_ptr<skgpu::VulkanExtensions> extensions(new skgpu::VulkanExtensions());
     backendContext.fInstance = VK_NULL_HANDLE;
     backendContext.fDevice = VK_NULL_HANDLE;
+    backendContext.fMemoryAllocator = nullptr;
 
-    // This call will fail if run, due to the context not being set up.
     sk_sp<GrDirectContext> ctx = GrDirectContexts::MakeVulkan(backendContext);
     if (!ctx) {
-        // There would need to be vulkan cleanup here.
         return 1;
     }
 
@@ -40,11 +29,7 @@ int main(int argc, char** argv) {
 
     sk_sp<SkSurface> surface =
             SkSurfaces::RenderTarget(ctx.get(), skgpu::Budgeted::kYes, imageInfo);
-    if (!surface) {
-        printf("Could not make surface from Vulkan DirectContext\n");
-        return 1;
-    }
-
+    
     SkCanvas* canvas = surface->getCanvas();
     canvas->clear(SK_ColorYELLOW);
     SkRRect rrect = SkRRect::MakeRectXY(SkRect::MakeLTRB(10, 20, 50, 70), 10, 10);
@@ -54,9 +39,7 @@ int main(int argc, char** argv) {
     paint.setAntiAlias(true);
 
     canvas->drawRRect(rrect, paint);
-
     ctx->flush();
 
-    // There would need to be vulkan cleanup here.
     return 0;
 }
